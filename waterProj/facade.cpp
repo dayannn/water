@@ -68,7 +68,7 @@ void Facade::loadCameraFromFile(StreamInfo info)
         waterGrid = grid;
         grid->setColor(QColor(32, 178, 201));
 
-        sceneManager->addObject(grid->createGrid(0, 0, 50, 50, 3, 60, 60));
+        sceneManager->addObject(grid->createGrid(0, 0, 50, 50, 5, 50, 50));
         grid->Solve();
         grid->recalculateNormals();
 
@@ -79,14 +79,14 @@ void Facade::loadCameraFromFile(StreamInfo info)
         boatInfo.sourceName = boatFile;
         boatInfo.sourceType = SOURCE_FILE;
         boat = (Model*) loadManager->loadObject(&boatInfo);
-        boat->setColor(QColor(168, 101, 64));
+        boat->setColor(QColor(178, 111, 74));
         boat->remakeNormals();      // do smth with it!
         sceneManager->addObject(boat);
         delete boatFile;
 
         TransformInfo boatTransform;
         boatTransform.type = TRANSFORM_MOVE_Y;
-        boatTransform.delta = 3;
+        boatTransform.delta = 5;
         transformManager->transformModel(boat, &boatTransform);
 
         boatTransform.type = TRANSFORM_MOVE_X;

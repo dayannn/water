@@ -34,7 +34,7 @@ PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent)
     zbuffer = nullptr;
     zbufHeight = 0;
 
-    bgColor = QColor(40, 40, 40);
+    bgColor = QColor(80, 80, 80);
 }
 
 PaintWidget::~PaintWidget()

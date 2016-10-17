@@ -38,17 +38,27 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
 
     Matrix transformMatr = Matrix::identity(4);
 
-    Matrix matr = Matrix::rotateX(a);
-    //transformMatr = matr * transformMatr;
-    transformMatr.multLeft(matr);
+    Matrix matr;
+    if (a != 0)
+    {
+        matr = Matrix::rotateX(a);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
+    }
 
-    matr = Matrix::rotateY(b);
-    //transformMatr = matr * transformMatr;
-    transformMatr.multLeft(matr);
+    if (b != 0)
+    {
+        matr = Matrix::rotateY(b);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
+    }
 
-    matr = Matrix::rotateZ(c);
-    //transformMatr = matr * transformMatr;
-    transformMatr.multLeft(matr);
+    if (c != 0)
+    {
+        matr = Matrix::rotateZ(c);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
+    }
 
     Matrix modelRotMatr = transformMatr;
 
@@ -56,9 +66,12 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     b = posInfo.y;
     c = posInfo.z;
 
-    matr = Matrix::move(a, b, c);
-    //transformMatr = matr * transformMatr;
-    transformMatr.multLeft(matr);
+    if (a || b || c)
+    {
+        matr = Matrix::move(a, b, c);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
+    }
 
     a = -camera->getCenter().x;
     b = -camera->getCenter().y;
@@ -82,7 +95,7 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     Matrix Viewport = viewport(canvas->width()/8, canvas->height()/8, canvas->width()*3/4, canvas->height()*3/4);
 
     Vec3d cam(0,0,1);
-    projection[3][2] = -1.0/cam.z;
+    projection[3][2] = -0.9/cam.z;
 
     //transformMatr = Viewport * projection * transformMatr;
     transformMatr.multLeft(projection);

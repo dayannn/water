@@ -9,3 +9,4 @@ template <> template <> Vec3<int>::Vec3<>(const Vec3<double> &v)
 template <> template <> Vec3<double>::Vec3<>(const Vec3<int> &v) : x(v.x), y(v.y), z(v.z) {}
 
 
+

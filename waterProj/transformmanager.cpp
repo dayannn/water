@@ -70,8 +70,9 @@ void TransformManager::transformCamera(BaseObject* object, const TransformInfo* 
     else if (transformInfo->type == TRANSFORM_MOVE_FORWARD)  // движение вперед/назад относительно направления взгляда камеры
     {
         Vec3d p = camera->getCenter();
-        p.setX(p.x + transformInfo->delta*sin(camera->getBeta()));
-        p.setZ(p.z + transformInfo->delta*(-cos(camera->getBeta())));
+
+        p.x = (p.x + transformInfo->delta*sin(camera->getBeta()));
+        p.z = (p.z + transformInfo->delta*(-cos(camera->getBeta())));
 /*Vec3d camdir (cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), -cos(camera->getAlpha())*cos(camera->getBeta()));
 
         p.setX(p.x + transformInfo->delta*cos(camera->getAlpha())*sin(camera->getBeta()));
@@ -83,8 +84,8 @@ void TransformManager::transformCamera(BaseObject* object, const TransformInfo* 
     else if (transformInfo->type == TRANSFORM_MOVE_SIDE) // движение вправо/влево относительно направления взгляда камеры
     {
         Vec3d p = camera->getCenter();
-        p.setX(p.x + transformInfo->delta*cos(camera->getBeta()));
-        p.setZ(p.z + transformInfo->delta*sin(camera->getBeta()));
+        p.x = (p.x + transformInfo->delta*cos(camera->getBeta()));
+        p.z = (p.z + transformInfo->delta*sin(camera->getBeta()));
         camera->setCenter(p);
     }
 
