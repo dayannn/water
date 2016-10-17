@@ -1,12 +1,14 @@
 #include "geometry.h"
 #include "matrix.h"
 
-template <> Vec3<double>::Vec3(Matrix m) : x(m[0][0]/m[3][0]), y(m[1][0]/m[3][0]), z(m[2][0]/m[3][0]) {}
+template <> template <>
+vec<3,int>  ::vec(const vec<3,float> &v) : x(int(v.x+.5f)),y(int(v.y+.5f)),z(int(v.z+.5f)) {}
 
-template <> template <> Vec3<int>::Vec3<>(const Vec3<double> &v)
-    : x(static_cast<int>(v.x+.5)), y(static_cast<int>(v.y+.5)), z(static_cast<int>(v.z+.5)) {}
+template <> template <>
+vec<3,float>::vec(const vec<3,int> &v)   : x(v.x),y(v.y),z(v.z) {}
 
-template <> template <> Vec3<double>::Vec3<>(const Vec3<int> &v) : x(v.x), y(v.y), z(v.z) {}
+template <> template <>
+vec<2,int>  ::vec(const vec<2,float> &v) : x(int(v.x+.5f)),y(int(v.y+.5f)) {}
 
-
-
+template <> template <>
+vec<2,float>::vec(const vec<2,int> &v)   : x(v.x),y(v.y) {}
