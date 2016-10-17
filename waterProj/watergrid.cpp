@@ -67,6 +67,71 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
             _faces.push_back(v);
         }
 
+    // боковые грани
+    _verts.push_back(Vec3d(_verts[0].x, 0, _verts[0].z));
+    for (int i = 1; i < xnum; i++)
+    {
+        _verts.push_back(Vec3d(_verts[i*znum].x, 0, _verts[i*znum].z));
+
+        v[0][2] = v[0][0] = (i-1)*znum;
+        v[1][2] = v[1][0] = i*znum;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+
+        v[0][2] = v[0][0] = i*znum;
+        v[1][2] = v[1][0] = _verts.size()-1;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+    }
+
+    _verts.push_back(Vec3d(_verts[xnum-1].x, 0, _verts[xnum-1].z));
+    for (int i = 1; i < xnum; i++)
+    {
+        _verts.push_back(Vec3d(_verts[i*znum + xnum-1].x, 0, _verts[i*znum + xnum-1].z));
+
+        v[0][2] = v[0][0] = (i-1)*znum + xnum-1;
+        v[1][2] = v[1][0] = i*znum + xnum-1;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+
+        v[0][2] = v[0][0] = i*znum + xnum-1;
+        v[1][2] = v[1][0] = _verts.size()-1;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+    }
+
+    _verts.push_back(Vec3d(_verts[0].x, 0, _verts[0].z));
+    for (int i = 1; i < xnum; i++)
+    {
+        _verts.push_back(Vec3d(_verts[i].x, 0, _verts[i].z));
+
+        v[0][2] = v[0][0] = i-1;
+        v[1][2] = v[1][0] = i;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+
+        v[0][2] = v[0][0] = i;
+        v[1][2] = v[1][0] = _verts.size()-1;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+    }
+
+    _verts.push_back(Vec3d(_verts[(znum-1)*xnum].x, 0, _verts[(znum-1)*xnum].z));
+    for (int i = 1; i < xnum; i++)
+    {
+        _verts.push_back(Vec3d(_verts[(znum-1)*xnum + i].x, 0, _verts[(znum-1)*xnum + i].z));
+
+        v[0][2] = v[0][0] = (znum-1)*xnum + i-1;
+        v[1][2] = v[1][0] = (znum-1)*xnum + i;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+
+        v[0][2] = v[0][0] = (znum-1)*xnum + i;
+        v[1][2] = v[1][0] = _verts.size()-1;
+        v[2][2] = v[2][0] = _verts.size()-2;
+        _faces.push_back(v);
+    }
+
     _norms.resize(_verts.size());
 
     for (auto norm : _norms)
