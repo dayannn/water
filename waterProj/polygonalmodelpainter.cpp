@@ -8,7 +8,7 @@ Matrix lookat(Vec3d eye, Vec3d center, Vec3d up) {
     Vec3d z = (eye-center).normalize();
     Vec3d x = (up^z).normalize();
     Vec3d y = (z^x).normalize();
-    Matrix res = Matrix::identity(4);
+    Matrix res = Matrix::identity();
     for (int i=0; i<3; i++) {
         res[0][i] = x[i];
         res[1][i] = y[i];
@@ -36,7 +36,7 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     double b = posInfo.beta;
     double c = posInfo.gamma;
 
-    Matrix transformMatr = Matrix::identity(4);
+    Matrix transformMatr = Matrix::identity();
 
     Matrix matr;
     if (a != 0)
@@ -91,7 +91,7 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     //transformMatr = matr * transformMatr;
     transformMatr.multLeft(matr);
 
-    Matrix projection = Matrix::identity(4);
+    Matrix projection = Matrix::identity();
     Matrix Viewport = viewport(canvas->width()/8, canvas->height()/8, canvas->width()*3/4, canvas->height()*3/4);
 
     Vec3d cam(0,0,1);
