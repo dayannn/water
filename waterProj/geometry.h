@@ -8,7 +8,7 @@
 // TODO:
 // release complex operators (+=, -=, etc)
 
-class Matrix;
+//class Matrix;
 
 /*template <typename T> struct Vec2
 {

@@ -18,7 +18,7 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
     double b = posInfo.beta;
     double c = posInfo.gamma;
 
-    Matrix transformMatr = Matrix::identity(4);
+    Matrix transformMatr = Matrix::identity();
 
     Matrix matr = Matrix::rotateX(a);
     transformMatr = matr * transformMatr;
@@ -51,8 +51,8 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
     matr = Matrix::rotateX(a);
     transformMatr = matr * transformMatr;
 
-    Matrix projection = Matrix::identity(4);
-    Matrix Viewport = viewport(canvas->width()/8, canvas->height()/8, canvas->width()*3/4, canvas->height()*3/4);
+    Matrix projection = Matrix::identity();
+    Matrix Viewport = Matrix::viewport(canvas->width()/8, canvas->height()/8, canvas->width()*3/4, canvas->height()*3/4);
 
     Vec3d cam(0,0,1);
     projection[3][2] = -1.0/cam.z;
@@ -76,8 +76,8 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
             Vec3d& v0 = model->vertice(face[i][0]);
             Vec3d& v1 = model->vertice(face[(i+1)%3][0]);
 
-            Vec3i vscr0 = Vec3d(transformMatr*Matrix(v0));
-            Vec3i vscr1 = Vec3d(transformMatr*Matrix(v1));
+            Vec3i vscr0 = proj<3>(transformMatr*embed<4>(v0));
+            Vec3i vscr1 = proj<3>(transformMatr*embed<4>(v1));
 
             canvas->drawEdge(vscr0.x, vscr0.y, vscr1.x, vscr1.y, modelColor);
         }

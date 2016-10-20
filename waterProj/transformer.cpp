@@ -26,19 +26,19 @@ void Transformer::transformPoint(Vec3d* const point, const TransformInfo *transf
                 break;*/
 
     case TRANSFORM_MOVE_X:
-        point->setX(point->x + transformInfo->delta);
+        point->x = (point->x + transformInfo->delta);
         return;     // хммммм
     case TRANSFORM_MOVE_Y:
-        point->setY(point->y + transformInfo->delta);
+        point->y = (point->y + transformInfo->delta);
         return;
     case TRANSFORM_MOVE_Z:
-        point->setZ(point->z + transformInfo->delta);
+        point->z = (point->z + transformInfo->delta);
         return;
 
     case TRANSFORM_SCALE:
-        point->setX(point->x * transformInfo->delta);
-        point->setY(point->y * transformInfo->delta);
-        point->setZ(point->z * transformInfo->delta);
+        point->x = (point->x * transformInfo->delta);
+        point->y = (point->y * transformInfo->delta);
+        point->z = (point->z * transformInfo->delta);
         break;
     default:
         throw InvalidTransformException();
@@ -51,9 +51,9 @@ void Transformer::transformPoint(Vec3d* const point, const TransformInfo *transf
     coord.z = point->z;
 
     matrix = matrix * Matrix(coord);
-    point->setX(coord[0]);
-    point->setY(coord[1]);
-    point->setZ(coord[2]);
+    point->x = (coord[0]);
+    point->y = (coord[1]);
+    point->z = (coord[2]);
 }
 
 Transformer::~Transformer()
