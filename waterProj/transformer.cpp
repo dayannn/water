@@ -50,7 +50,7 @@ void Transformer::transformPoint(Vec3d* const point, const TransformInfo *transf
     coord.y = point->y;
     coord.z = point->z;
 
-    matrix = matrix * Matrix(coord);
+    coord = proj<3>(matrix * embed<4>(coord));
     point->x = (coord[0]);
     point->y = (coord[1]);
     point->z = (coord[2]);

@@ -403,19 +403,20 @@ template <size_t len, size_t dim, typename T>
 vec<len, T> embed(const vec<dim, T> &v, T fill = 1){
     vec<len, T> ret;
     for (size_t i = len; i--; ret[i] = (i < dim ? v[i] : fill));
+    return ret;
 }
 
 template <size_t len, size_t dim, typename T>
 vec<len, T> proj (const vec<dim, T> &v){
     vec<len, T> ret;
-    for (size_t i = len; i--; ret[i] = v[i]);
+    for (size_t i = len; i--; ret[i] = v[i]/v[3]); // УБЕРИ!!!!!!!
     return ret;
 }
 
 template <typename T>
 vec<3, T> cross(const vec<3, T> &v1, const vec<3, T> &v2){
     return vec<3, T> (v1.y * v2.z - v1.z * v2.y,
-                      v1.z * v2.x - v1.z * v2.z,
+                      v1.z * v2.x - v1.x * v2.z,
                       v1.x * v2.y - v1.y * v2.x);
 }
 

@@ -38,8 +38,11 @@ BaseObject* Model::loadFromFile(const std::string *filename)
         if (!line.compare(0, 2, "v ")){
             iss >> trash;
             Vec3d v;
-            for (int i = 0; i < 3; i++)
-                iss >> v.raw[i];
+            //for (int i = 0; i < 3; i++)
+            //    iss >> v.raw[i];
+            iss >> v.x;
+            iss >> v.y;
+            iss >> v.z;
             _verts.push_back(v);
         }
         else if (!line.compare(0, 3, "vn ")){

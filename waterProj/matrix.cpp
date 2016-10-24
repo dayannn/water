@@ -1,5 +1,6 @@
 #include "matrix.h"
 
+
 /*Matrix::Matrix(Vec3d v) : m(std::vector<std::vector<double> >(4, std::vector<double>(1, 1.f))), rows(4), cols(1) {
     m[0][0] = v.x;
     m[1][0] = v.y;

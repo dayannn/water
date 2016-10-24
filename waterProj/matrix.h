@@ -3,6 +3,8 @@
 
 #include "geometry.h"
 
+// !!!!!!!!!!!!!
+// MAKE MATRICES INSIDE METHODS STATIC????
 
 // TODO: release *= operator
 
@@ -264,6 +266,23 @@ public:
             }
         }
         return *this;
+    }
+
+    void multLeft (const matr<4, 4, T>& a)
+    {
+        matr<4, 4, T> temp;
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                temp[i][j] = (*this)[i][j];
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                (*this)[i][j] = 0.f;
+                for (int k = 0; k < 4; k++) {
+                    (*this)[i][j] += a[i][k] * temp[k][j];
+                }
+            }
+        }
     }
 
     matr<4, 4, T> operator/ (const T& rhs){
