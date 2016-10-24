@@ -231,16 +231,15 @@ struct vec<2, T>{
     }
 
     T operator* (const vec<2, T>& rhs){
-        T ret = T();
-        x *= rhs.x;
-        y *= rhs.y;
+        T ret;
+        ret = this->x * rhs.x + this->y * rhs.y;
         return ret;
     }
 
     vec<2, T> operator+ (const vec<2, T>& rhs){
         vec<2, T> res;
-        res.x += rhs.x;
-        res.y += rhs.y;
+        res.x = this->x + rhs.x;
+        res.y = this->y + rhs.y;
         return res;
     }
 
@@ -252,8 +251,8 @@ struct vec<2, T>{
 
     vec<2, T> operator- (const vec<2, T>& rhs){
         vec<2, T> res;
-        res.x -= rhs.x;
-        res.y -= rhs.y;
+        res.x = this->x - rhs.x;
+        res.y = this->y - rhs.y;
         return res;
     }
 
@@ -266,8 +265,8 @@ struct vec<2, T>{
     template <typename U>
     vec<2, T> operator*(const U& rhs){
         vec<2, T> res;
-        res.x *= rhs;
-        res.y *= rhs;
+        res.x = this->x * rhs;
+        res.y = this->y * rhs;
         return res;
     }
 
@@ -281,8 +280,8 @@ struct vec<2, T>{
     template <typename U>
     vec<2, T> operator/(const U& rhs){
         vec<2, T> res;
-        res.x /= rhs;
-        res.y /= rhs;
+        res.x = this->x / rhs;
+        res.y = this->y / rhs;
         return res;
     }
 
@@ -313,18 +312,16 @@ struct vec<3, T>{
     }
 
     T operator* (const vec<3, T>& rhs){
-        T ret = T();
-        x *= rhs.x;
-        y *= rhs.y;
-        z *= rhs.z;
+        T ret;
+        ret = this->x*rhs.x + this->y*rhs.y + this->z*rhs.z;
         return ret;
     }
 
     vec<3, T> operator+ (const vec<3, T>& rhs){
         vec<3, T> res;
-        res.x += rhs.x;
-        res.y += rhs.y;
-        res.z += rhs.z;
+        res.x = this->x + rhs.x;
+        res.y = this->y + rhs.y;
+        res.z = this->z + rhs.z;
         return res;
     }
 
@@ -337,9 +334,9 @@ struct vec<3, T>{
 
     vec<3, T> operator- (const vec<3, T>& rhs){
         vec<3, T> res;
-        res.x -= rhs.x;
-        res.y -= rhs.y;
-        res.z -= rhs.z;
+        res.x = this->x - rhs.x;
+        res.y = this->y - rhs.y;
+        res.z = this->z - rhs.z;
         return res;
     }
 
@@ -353,9 +350,9 @@ struct vec<3, T>{
     template <typename U>
     vec<3, T> operator*(const U& rhs){
         vec<3, T> res;
-        res.x *= rhs;
-        res.y *= rhs;
-        res.z *= rhs;
+        res.x = this->x * rhs;
+        res.y = this->y * rhs;
+        res.z = this->z * rhs;
         return res;
     }
 
@@ -370,9 +367,9 @@ struct vec<3, T>{
     template <typename U>
     vec<3, T> operator/(const U& rhs){
         vec<3, T> res;
-        res.x /= rhs;
-        res.y /= rhs;
-        res.z /= rhs;
+        res.x = this->x / rhs;
+        res.y = this->y / rhs;
+        res.z = this->z / rhs;
         return res;
     }
 
