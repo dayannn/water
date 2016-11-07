@@ -69,6 +69,9 @@ FORMS    += mainwindow.ui
 DISTFILES += \
     classes_diagram.qmodel
 
+# optimization ?
+#QMAKE_CXXFLAGS += -Ofast -flto
+
 # Profiler flags
 #CONFIG += DEBUG
 #QMAKE_CXXFLAGS_DEBUG += -pg

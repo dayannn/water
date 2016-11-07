@@ -34,7 +34,7 @@ PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent)
     zbuffer = nullptr;
     zbufHeight = 0;
 
-    bgColor = QColor(80, 80, 80);
+    bgColor = QColor(90, 90, 90);
 }
 
 PaintWidget::~PaintWidget()
@@ -176,63 +176,6 @@ void PaintWidget::fillTriangle(Vec3i &v0, Vec3i &v1, Vec3i &v2, double ity0, dou
     }
 }
 
-void PaintWidget::fillTexturedTriangle(Model& mdl, Vec3i &v0, Vec3i &v1, Vec3i &v2, Vec2i &uv0, Vec2i &uv1, Vec2i &uv2, QImage &texture, double intensity)
-{
-   // QPainter p(img);
-   // p.drawImage(0, 0, texture);
-
-    if (v0.y == v1.y && v0.y == v2.y)
-        return;
-    if (v0.y > v1.y)
-    {
-        std::swap(v0, v1);
-        std::swap(uv0, uv1);
-    }
-    if (v0.y > v2.y)
-    {
-        std::swap(v0, v2);
-        std::swap(uv0, uv2);
-    }
-    if (v1.y > v2.y)
-    {
-        std::swap(v1, v2);
-        std::swap(uv1, uv2);
-    }
-
-    int total_height = v2.y - v0.y;
-    for (int i = 0; i < total_height; i++)
-    {
-        bool second_half = i > v1.y-v0.y || v1.y == v0.y;
-        int segment_height = second_half ? v2.y-v1.y : v1.y-v0.y;
-        double alpha = (double)i/total_height;
-        double beta  = (double)(i-(second_half ? v1.y-v0.y : 0))/segment_height;
-
-        Vec3i A = v0 + Vec3d(v2-v0)*alpha;
-        Vec3i B = second_half ? v1 + Vec3d(v2-v1 )*beta : v0 + Vec3d(v1-v0)*beta;
-        Vec2i uvA = uv0 +(uv2-uv0)*alpha;
-        Vec2i uvB = second_half ? uv1 + (uv2-uv1)*beta : uv0 + (uv1-uv0)*beta;
-
-        if (A.x > B.x)
-        {
-            std::swap(A, B);
-            std::swap(uvA, uvB);
-        }
-        for (int j = A.x; j <= B.x; j++)
-        {
-            double phi = B.x == A.x ? 1. : (double)(j-A.x)/(double)(B.x-A.x);
-            Vec3i P = Vec3d(A) + Vec3d(B-A)*phi;
-            Vec2i uvP = uvA + (uvB-uvA)*phi;
-            if (P.x > 0 && P.x < width() && P.y > 0 && P.y < height())
-                if (zbuffer[P.y][P.x] < P.z)
-                {
-                    zbuffer[P.y][P.x] = P.z;
-                    QColor color = mdl.diffuse(uvP);
-                    img->setPixel(P.x, P.y, qRgb(color.red()*intensity, color.green()*intensity, color.blue()*intensity));
-                }
-        }
-    }
-}
-
 void PaintWidget::clear()
 {
     img->fill(bgColor);
@@ -275,3 +218,5 @@ void PaintWidget::prepareZBuf()
         for (int j = 0; j < w; j++)
             zbuffer[i][j] = min;
 }
+
+

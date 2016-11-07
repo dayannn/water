@@ -283,6 +283,14 @@ public:
                 }
             }
         }
+       /* for (int i = 4; i--; )
+            for (int j = 4; j--; )
+                (*this)[i][j] = 0;
+        for (int i = 0; i < 4; i++)
+            for (int k = 0; k < 4; k++)
+                for (int j = 0; j < 4; j++)
+                    (*this)[i][j] += a[i][k] * temp[k][j];*/
+
     }
 
     matr<4, 4, T> operator/ (const T& rhs){
@@ -428,6 +436,20 @@ public:
         m[1][1] = h/2.f;
         m[2][2] = depth/2.f;
         return m;
+    }
+
+    static matr<4, 4, T> lookat(Vec3d eye, Vec3d center, Vec3d up) {
+        Vec3d z = (eye-center).normalize();
+        Vec3d x = cross(up, z).normalize();
+        Vec3d y = cross(z, x).normalize();
+        matr<4, 4, T> res = matr<4, 4, T>::identity();
+        for (int i=0; i<3; i++) {
+            res[0][i] = x[i];
+            res[1][i] = y[i];
+            res[2][i] = z[i];
+            res[i][3] = -center[i];
+        }
+        return res;
     }
 };
 

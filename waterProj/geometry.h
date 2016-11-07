@@ -406,7 +406,14 @@ vec<len, T> embed(const vec<dim, T> &v, T fill = 1){
 template <size_t len, size_t dim, typename T>
 vec<len, T> proj (const vec<dim, T> &v){
     vec<len, T> ret;
-    for (size_t i = len; i--; ret[i] = v[i]/v[3]); // УБЕРИ!!!!!!!
+    for (size_t i = len; i--; ret[i] = v[i]);
+    return ret;
+}
+
+template <typename T>
+vec<3, T> proj3d (const vec<4, T> &v){
+    vec<3, T> ret;
+    for (size_t i = 3; i--; ret[i] = v[i]/v[3]);
     return ret;
 }
 

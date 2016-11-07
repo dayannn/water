@@ -115,6 +115,11 @@ Vec3d &Model::vertice(int i)
     return _verts[i];
 }
 
+Vec3d &Model::vertice(int iface, int nvert)
+{
+    return _verts[_faces[iface][nvert][0]];
+}
+
 void Model::loadTexture(const std::string* filename, const char *suffix)
 {
     std::string textfile(*filename);

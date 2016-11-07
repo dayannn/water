@@ -21,7 +21,6 @@ public:
     virtual void drawEdge(double, double, double, double, QColor &modelColor) override;
     virtual void drawPoint(double, double, QColor &modelColor) override;
     virtual void fillTriangle(Vec3i &v0, Vec3i &v1, Vec3i &v2, double ity0, double ity1, double ity2, QColor &modelColor) override;
-    virtual void fillTexturedTriangle(Model &mdl, Vec3i &v0, Vec3i &v1, Vec3i &v2, Vec2i& uv0, Vec2i& uv1, Vec2i& uv2, QImage& img, double intensity) override;
     virtual void prepareZBuf() override;
 };
 

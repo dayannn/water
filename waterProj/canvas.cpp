@@ -45,6 +45,7 @@ void Canvas::drawPoint(double x, double y, QColor &modelColor)
 
 void Canvas::update()
 {
+    // repaint ?
     info.paintWidget->update();
 }
 
@@ -61,11 +62,6 @@ int Canvas::height()
 void Canvas::fillTriangle(Vec3i &v0, Vec3i &v1, Vec3i &v2, double ity0, double ity1, double ity2, QColor& modelColor)
 {
     info.paintWidget->fillTriangle(v0, v1, v2, ity0, ity1, ity2, modelColor);
-}
-
-void Canvas::fillTexturedTriangle(Model &mdl, Vec3i &v0, Vec3i &v1, Vec3i &v2, Vec2i &uv0, Vec2i &uv1, Vec2i &uv2, QImage &img, double intensity)
-{
-    info.paintWidget->fillTexturedTriangle(mdl, v0, v1, v2, uv0, uv1, uv2, img, intensity);
 }
 
 void Canvas::prepareZBuf()

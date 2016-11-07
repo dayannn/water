@@ -191,8 +191,13 @@ void WaterGrid::recalculateNormals()
 
     for (auto face : _faces)
     {
+        //for (auto vert : face)
+        //    _norms[vert[2]] += _verts[vert[0]];     // vert[2] - номер нормали вершины модели, vert[0]  -номер вершины модели
+        Vec3d a = _verts[face[1][0]] - _verts[face[0][0]];
+        Vec3d b = _verts[face[2][0]] - _verts[face[0][0]];
+        Vec3d facenorm = cross (a, b);
         for (auto vert : face)
-            _norms[vert[2]] = _norms[vert[2]] + _verts[vert[0]];
+            _norms[vert[2]] += facenorm;
     }
 }
 

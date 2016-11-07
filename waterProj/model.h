@@ -35,6 +35,7 @@ public:
     vector<vector<Vec3i> > &getFaces();
 
     Vec3d& vertice(int i);
+    Vec3d &vertice(int iface, int nvert);
     vector<Vec3i> &face(int i);
     Vec3d& norm(int iface, int nvert);
 

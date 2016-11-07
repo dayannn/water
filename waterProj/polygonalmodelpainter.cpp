@@ -4,19 +4,6 @@ PolygonalModelPainter::PolygonalModelPainter(){}
 
 PolygonalModelPainter::~PolygonalModelPainter(){}
 
-Matrix lookat(Vec3d eye, Vec3d center, Vec3d up) {
-    Vec3d z = (eye-center).normalize();
-    Vec3d x = cross(up, z).normalize();
-    Vec3d y = cross(z, x).normalize();
-    Matrix res = Matrix::identity();
-    for (int i=0; i<3; i++) {
-        res[0][i] = x[i];
-        res[1][i] = y[i];
-        res[2][i] = z[i];
-        res[i][3] = -center[i];
-    }
-    return res;
-}
 
 void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *camera)
 {
@@ -28,8 +15,9 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
    // eye.normalize();
     Vec3d center(camera->getCenter().x , camera->getCenter().y, camera->getCenter().z);
 
-    Matrix ModelView  = lookat(eye, center, Vec3d(0,1,0));*/
+    Matrix ModelView  = Matrix::lookat(eye, center, Vec3d(0,1,0));*/
 
+    //Matrix ModelView = Matrix::lookat(Vec3d(0, -1, 3), Vec3d(0, 0, 0), Vec3d(0, 1, 0));
 
     PositionInfo &posInfo = model->getPositionInfo();
     double a = posInfo.alpha;
@@ -42,22 +30,22 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     if (a != 0)
     {
         matr = Matrix::rotateX(a);
-        transformMatr = matr * transformMatr;
-        //transformMatr.multLeft(matr);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
     }
 
     if (b != 0)
     {
         matr = Matrix::rotateY(b);
-        transformMatr = matr * transformMatr;
-        //transformMatr.multLeft(matr);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
     }
 
     if (c != 0)
     {
         matr = Matrix::rotateZ(c);
-        transformMatr = matr * transformMatr;
-        //transformMatr.multLeft(matr);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
     }
 
     Matrix modelRotMatr = transformMatr;
@@ -69,8 +57,8 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     if (a || b || c)
     {
         matr = Matrix::move(a, b, c);
-        transformMatr = matr * transformMatr;
-        //transformMatr.multLeft(matr);
+        //transformMatr = matr * transformMatr;
+        transformMatr.multLeft(matr);
     }
 
     a = -camera->getCenter().x;
@@ -78,18 +66,18 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     c = -camera->getCenter().z;
 
     matr = Matrix::move(a, b, c);
-    transformMatr = matr * transformMatr;
-    //transformMatr.multLeft(matr);
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     b = camera->getBeta();
     matr = Matrix::rotateY(b);
-    transformMatr = matr * transformMatr;
-    //transformMatr.multLeft(matr);
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     a = camera->getAlpha();
     matr = Matrix::rotateX(a);
-    transformMatr = matr * transformMatr;
-    //transformMatr.multLeft(matr);
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     Matrix projection = Matrix::identity();
     Matrix Viewport = Matrix::viewport(canvas->width()/8, canvas->height()/8, canvas->width()*3/4, canvas->height()*3/4);
@@ -97,14 +85,14 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     Vec3d cam(0,0,1);
     projection[3][2] = -1.0/cam.z;
 
-    transformMatr = Viewport * projection * transformMatr;
-    //transformMatr.multLeft(projection);
-    //transformMatr.multLeft(Viewport);
+    //transformMatr = Viewport * projection * transformMatr;
+    transformMatr.multLeft(projection);
+    transformMatr.multLeft(Viewport);
 
-    Vec3d light_dir = {0.1, 1, 0.3};
+    //Vec3d light_dir = {-0.3, -1, -0.4};
 
     //uncomment below to make camera a light sourse
-    //Vec3d light_dir = {cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), -cos(camera->getAlpha())*cos(camera->getBeta())};
+    Vec3d light_dir = {cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), cos(camera->getAlpha())*cos(camera->getBeta())};
     light_dir.normalize();
 
     for (unsigned i = 0; i < model->getFacesNum(); i++)
@@ -117,18 +105,18 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
         for (int j = 0; j < 3; j++)
         {
             Vec3d& v = model->vertice(face[j][0]);
-            screen_coords[j] = proj<3>(transformMatr*embed<4>(v));
+            screen_coords[j] = proj3d(transformMatr*embed<4>(v));
             //world_coords[j] = v;
-            intensity[j] = proj<3>(modelRotMatr * embed<4>(model->norm(i, j)))*light_dir;
+            intensity[j] = proj3d(modelRotMatr * embed<4>(model->norm(i, j)))*light_dir;
         }
 
-  /*      Vec3d n = (world_coords[2] - world_coords[0])^(world_coords[1]-world_coords[0]);
-      //  Vec3d camdir (sin(camera->getBeta()), -cos(camera->getBeta())*sin(camera->getAlpha()), -cos(camera->getBeta())*cos(camera->getAlpha()));
-       // Vec3d camdir (sin(camera->getBeta())*cos(camera->getAlpha()), sin(camera->getBeta())*sin(camera->getAlpha()), -cos(camera->getBeta()));
-        Vec3d camdir (cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), -cos(camera->getAlpha())*cos(camera->getBeta()));
-        double visibility = n*camdir;
+//        Vec3d n = (world_coords[2] - world_coords[0])^(world_coords[1]-world_coords[0]);
+//        Vec3d camdir (cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), -cos(camera->getAlpha())*cos(camera->getBeta()));
+//        double visibility = n*camdir;
 
-        if (visibility >= 0)*/
+//        if (visibility >= 0)
             canvas->fillTriangle(screen_coords[0], screen_coords[1], screen_coords[2], intensity[0], intensity[1], intensity[2], modelColor);
     }
+
+
 }

@@ -21,35 +21,42 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
     Matrix transformMatr = Matrix::identity();
 
     Matrix matr = Matrix::rotateX(a);
-    transformMatr = matr * transformMatr;
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     matr = Matrix::rotateY(b);
-    transformMatr = matr * transformMatr;
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     matr = Matrix::rotateZ(c);
-    transformMatr = matr * transformMatr;
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     a = posInfo.x;
     b = posInfo.y;
     c = posInfo.z;
 
     matr = Matrix::move(a, b, c);
-    transformMatr = matr * transformMatr;
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     a = -camera->getCenter().x;
     b = -camera->getCenter().y;
     c = -camera->getCenter().z;
 
     matr = Matrix::move(a, b, c);
-    transformMatr = matr * transformMatr;
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     b = camera->getBeta();
     matr = Matrix::rotateY(b);
-    transformMatr = matr * transformMatr;
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     a = camera->getAlpha();
     matr = Matrix::rotateX(a);
-    transformMatr = matr * transformMatr;
+    //transformMatr = matr * transformMatr;
+    transformMatr.multLeft(matr);
 
     Matrix projection = Matrix::identity();
     Matrix Viewport = Matrix::viewport(canvas->width()/8, canvas->height()/8, canvas->width()*3/4, canvas->height()*3/4);
@@ -57,7 +64,9 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
     Vec3d cam(0,0,1);
     projection[3][2] = -1.0/cam.z;
 
-    transformMatr = Viewport * projection * transformMatr;
+    //transformMatr = Viewport * projection * transformMatr;
+    transformMatr.multLeft(projection);
+    transformMatr.multLeft(Viewport);
 
     for (vector<Vec3i>& face : model->getFaces())
     {
@@ -76,8 +85,8 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
             Vec3d& v0 = model->vertice(face[i][0]);
             Vec3d& v1 = model->vertice(face[(i+1)%3][0]);
 
-            Vec3i vscr0 = proj<3>(transformMatr*embed<4>(v0));
-            Vec3i vscr1 = proj<3>(transformMatr*embed<4>(v1));
+            Vec3i vscr0 = proj3d(transformMatr*embed<4>(v0));
+            Vec3i vscr1 = proj3d(transformMatr*embed<4>(v1));
 
             canvas->drawEdge(vscr0.x, vscr0.y, vscr1.x, vscr1.y, modelColor);
         }
