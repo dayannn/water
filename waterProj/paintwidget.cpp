@@ -108,34 +108,52 @@ void PaintWidget::drawLine(double x1, double y1, double x2, double y2, QColor& m
     }
 }
 
-void PaintWidget::fillTriangle(Vec3i &v0, Vec3i &v1, Vec3i &v2, double ity0, double ity1, double ity2, QColor &modelColor)
-{
-    if (ity0 < 0)
-        ity0 = 0;
-    if (ity1 < 0)
-        ity1 = 0;
-    if (ity2 < 0)
-        ity2 = 0;
+Vec3d barycentric(Vec2d A, Vec2d B, Vec2d C, Vec2d P) {
+    Vec3d s[2];
+    for (int i=2; i--; ) {
+        s[i][0] = C[i]-A[i];
+        s[i][1] = B[i]-A[i];
+        s[i][2] = A[i]-P[i];
+    }
+    Vec3d u = cross(s[0], s[1]);
+    if (std::abs(u[2])>1e-2) // dont forget that u[2] is integer. If it is zero then triangle ABC is degenerate
+        return Vec3d(1.f-(u.x+u.y)/u.z, u.y/u.z, u.x/u.z);
+    return Vec3d(-1,1,1); // in this case generate negative coordinates, it will be thrown away by the rasterizator
+}
 
+void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, QColor &modelColor)
+{
     int width = this->width();
     int height = this->height();
+
+    Vec3i v0 = verts[0];
+    Vec3i v1 = verts[1];
+    Vec3i v2 = verts[2];
 
     if (v0.y == v1.y && v0.y == v2.y)
         return;
     if (v0.y > v1.y)
     {
         std::swap(v0, v1);
-        std::swap(ity0, ity1);
+        std::swap(verts[0], verts[1]);
+        std::swap(norms[0], norms[1]);
+        std::swap(real_verts[0], real_verts[1]);
     }
+
     if (v0.y > v2.y)
     {
         std::swap(v0, v2);
-        std::swap(ity0, ity2);
+        std::swap(verts[0], verts[2]);
+        std::swap(norms[0], norms[2]);
+        std::swap(real_verts[0], real_verts[2]);
     }
+
     if (v1.y > v2.y)
     {
         std::swap(v1, v2);
-        std::swap(ity1, ity2);
+        std::swap(verts[1], verts[2]);
+        std::swap(norms[1], norms[2]);
+        std::swap(real_verts[1], real_verts[2]);
     }
 
     int total_height = v2.y - v0.y;
@@ -147,29 +165,47 @@ void PaintWidget::fillTriangle(Vec3i &v0, Vec3i &v1, Vec3i &v2, double ity0, dou
         double alpha = (double)i/total_height;
         double beta  = (double)(i-(second_half ? v1.y - v0.y : 0))/segment_height;
 
+        Vec3d dAn = norms[0] + (norms[2]-norms[0])*alpha;
+        Vec3d dBn = second_half ? norms[1] + (norms[2]-norms[1])*beta : norms[0] + (norms[1]-norms[0])*beta;
+
+        Vec3d dA = real_verts[0] + (real_verts[2]-real_verts[0])*alpha;
+        Vec3d dB = second_half ? real_verts[1] + (real_verts[2]-real_verts[1])*beta : real_verts[0] + (real_verts[1]-real_verts[0])*beta;
+
         Vec3i A = v0 + Vec3d(v2-v0)*alpha;
         Vec3i B = second_half ? v1 + Vec3d(v2-v1)*beta : v0 + Vec3d(v1-v0)*beta;
-
-        double ityA = ity0 + (ity2 - ity0) * alpha;
-        double ityB = second_half ? ity1 + (ity2-ity1)*beta : ity0 + (ity1-ity0) * beta;
 
         if (A.x > B.x)
         {
             std::swap(A, B);
-            std::swap(ityA, ityB);
+            std::swap(dAn, dBn);
+            std::swap(dA, dB);
         }
         for (int j = A.x; j <= B.x; j++)
         {
             double phi = B.x == A.x ? 1.0 : (double)(j - A.x)/double(B.x - A.x);
             Vec3i P = Vec3d(A) + Vec3d(B-A)*phi;
-            double ityP = ityA + (ityB-ityA)*phi;
+            Vec3d dPn = dAn + (dBn-dAn)*phi;
+            Vec3d dP = dA + (dB-dA)*phi;
+            Vec3d light_dir = (dP - light).normalize();
+
+            //Vec3d bar = barycentric(proj<2>(real_verts[0]), proj<2>(real_verts[1]), proj<2>(real_verts[2]), proj<2>(dP));
+
+            Vec3d r = (dPn*(dPn*light_dir*2.f) - light_dir).normalize();
+            Vec3d v = (dPn - camera).normalize();
+            double reflection = pow(std::max(0.0, r*v), 4);
+
+            double ity = std::min(std::max(0.2, dPn*light_dir + 0.2), 1.0);
+            // с учётом уменьшения интенсивности с расстоянием
+            //double ity = std::max(0.0, dPn*light_dir/pow((dP - light).length(),2)*100);
 
             if (P.x > 0 && P.x < width && P.y > 0 && P.y < height)
             {
                 if (zbuffer[P.y][P.x] < P.z)
                 {
                     zbuffer[P.y][P.x] = P.z;
-                    img->setPixel(P.x, height - P.y, qRgb(modelColor.red()*ityP, modelColor.green()*ityP, modelColor.blue()*ityP));
+                    img->setPixel(P.x, height - P.y, qRgb(std::min(modelColor.red()*ity + 255*reflection, 255.0),
+                                                          std::min(modelColor.green()*ity + 255*reflection, 255.0),
+                                                          std::min(modelColor.blue()*ity + 255*reflection, 255.0)));
                 }
             }
         }

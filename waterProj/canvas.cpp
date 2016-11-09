@@ -59,9 +59,9 @@ int Canvas::height()
     return info.paintWidget->height();
 }
 
-void Canvas::fillTriangle(Vec3i &v0, Vec3i &v1, Vec3i &v2, double ity0, double ity1, double ity2, QColor& modelColor)
+void Canvas::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor)
 {
-    info.paintWidget->fillTriangle(v0, v1, v2, ity0, ity1, ity2, modelColor);
+    info.paintWidget->fillTriangle(verts, real_verts, norms, light, camera, modelColor);
 }
 
 void Canvas::prepareZBuf()

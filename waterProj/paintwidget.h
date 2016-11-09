@@ -24,8 +24,7 @@ public:
     ~PaintWidget();
 
     void drawLine(double x1, double y1, double x2, double y2, QColor &modelColor);
-    void fillTriangle(Vec3i &v0, Vec3i &v1, Vec3i &v2, double ity0, double ity1, double ity2, QColor &modelColor);
-    void fillTexturedTriangle(Model &mdl, Vec3i &v0, Vec3i &v1, Vec3i &v2, Vec2i& uv0, Vec2i& uv1, Vec2i& uv2, QImage& texture, double intensity);
+    void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor);
 
     void clear();
     void setImg();

@@ -79,7 +79,7 @@ void Facade::loadCameraFromFile(StreamInfo info)
         boatInfo.sourceName = boatFile;
         boatInfo.sourceType = SOURCE_FILE;
         boat = (Model*) loadManager->loadObject(&boatInfo);
-        boat->setColor(QColor(178, 111, 74));
+        boat->setColor(QColor(118, 71, 44));
         boat->remakeNormals();      // do smth with it!
         sceneManager->addObject(boat);
         delete boatFile;

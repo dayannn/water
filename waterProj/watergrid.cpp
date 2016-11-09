@@ -73,14 +73,14 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
     {
         _verts.push_back(Vec3d(_verts[i*znum].x, 0, _verts[i*znum].z));
 
-        v[0][2] = v[0][0] = (i-1)*znum;
+        v[2][2] = v[2][0] = (i-1)*znum;
         v[1][2] = v[1][0] = i*znum;
-        v[2][2] = v[2][0] = _verts.size()-2;
+        v[0][2] = v[0][0] = _verts.size()-2;
         _faces.push_back(v);
 
-        v[0][2] = v[0][0] = i*znum;
+        v[2][2] = v[2][0] = i*znum;
         v[1][2] = v[1][0] = _verts.size()-1;
-        v[2][2] = v[2][0] = _verts.size()-2;
+        v[0][2] = v[0][0] = _verts.size()-2;
         _faces.push_back(v);
     }
 
@@ -89,14 +89,14 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
     {
         _verts.push_back(Vec3d(_verts[i*znum + xnum-1].x, 0, _verts[i*znum + xnum-1].z));
 
-        v[2][2] = v[2][0] = (i-1)*znum + xnum-1;
+        v[0][2] = v[0][0] = (i-1)*znum + xnum-1;
         v[1][2] = v[1][0] = i*znum + xnum-1;
-        v[0][2] = v[0][0] = _verts.size()-2;
+        v[2][2] = v[2][0] = _verts.size()-2;
         _faces.push_back(v);
 
-        v[2][2] = v[2][0] = i*znum + xnum-1;
+        v[0][2] = v[0][0] = i*znum + xnum-1;
         v[1][2] = v[1][0] = _verts.size()-1;
-        v[0][2] = v[0][0] = _verts.size()-2;
+        v[2][2] = v[2][0] = _verts.size()-2;
         _faces.push_back(v);
     }
 
