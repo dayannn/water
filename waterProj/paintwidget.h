@@ -41,7 +41,7 @@ private:
     QImage *img;
     QColor bgColor;
 
-    int **zbuffer;
+    double **zbuffer;
     int zbufHeight;
 
     vector<pLine> linesVect;

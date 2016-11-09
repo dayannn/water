@@ -3,21 +3,21 @@
 #include <QPainter>
 
 
-void free_matrix_rows (int **p, int strs)
+void free_matrix_rows (double **p, int strs)
 {
     for (int i = 0; i < strs; i++)
         delete[] p[i];
     delete[] p;
 }
 
-int** allocate_matrix_rows (int strs, int cols)
+double** allocate_matrix_rows (int strs, int cols)
 {
-    int **p = new int*[strs];
+    double **p = new double*[strs];
     if (!p)
         return NULL;
     for (int i = 0; i < strs; i++)
     {
-        p[i] = new int [cols];
+        p[i] = new double [cols];
         if (!p[i])
         {
             free_matrix_rows (p, strs);
@@ -171,6 +171,9 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
         Vec3d dA = real_verts[0] + (real_verts[2]-real_verts[0])*alpha;
         Vec3d dB = second_half ? real_verts[1] + (real_verts[2]-real_verts[1])*beta : real_verts[0] + (real_verts[1]-real_verts[0])*beta;
 
+        Vec3d ddA = verts[0] + (verts[2] - verts[0])*alpha;
+        Vec3d ddB = second_half ? verts[1] + (verts[2]-verts[1])*beta : verts[0] + (verts[1]-verts[0])*beta;
+
         Vec3i A = v0 + Vec3d(v2-v0)*alpha;
         Vec3i B = second_half ? v1 + Vec3d(v2-v1)*beta : v0 + Vec3d(v1-v0)*beta;
 
@@ -186,23 +189,25 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
             Vec3i P = Vec3d(A) + Vec3d(B-A)*phi;
             Vec3d dPn = dAn + (dBn-dAn)*phi;
             Vec3d dP = dA + (dB-dA)*phi;
+            Vec3d ddP = ddA + (ddB-ddA)*phi;
             Vec3d light_dir = (dP - light).normalize();
 
             //Vec3d bar = barycentric(proj<2>(real_verts[0]), proj<2>(real_verts[1]), proj<2>(real_verts[2]), proj<2>(dP));
 
             Vec3d r = (dPn*(dPn*light_dir*2.f) - light_dir).normalize();
-            Vec3d v = (dPn - camera).normalize();
-            double reflection = pow(std::max(0.0, r*v), 4);
+            Vec3d v = (dP - camera).normalize();
+            double reflection = pow(std::max(0.0, r*v), 50);
 
-            double ity = std::min(std::max(0.2, dPn*light_dir + 0.2), 1.0);
+            double ity = std::min(std::max(0.2, dPn*light_dir), 1.0);
             // с учётом уменьшения интенсивности с расстоянием
             //double ity = std::max(0.0, dPn*light_dir/pow((dP - light).length(),2)*100);
+            //double ity = 0;
 
             if (P.x > 0 && P.x < width && P.y > 0 && P.y < height)
             {
-                if (zbuffer[P.y][P.x] < P.z)
+                if (ddP.z - zbuffer[P.y][P.x] > 10e-2)
                 {
-                    zbuffer[P.y][P.x] = P.z;
+                    zbuffer[P.y][P.x] = ddP.z;
                     img->setPixel(P.x, height - P.y, qRgb(std::min(modelColor.red()*ity + 255*reflection, 255.0),
                                                           std::min(modelColor.green()*ity + 255*reflection, 255.0),
                                                           std::min(modelColor.blue()*ity + 255*reflection, 255.0)));
@@ -247,7 +252,7 @@ void PaintWidget::resizeEvent(QResizeEvent *)
 
 void PaintWidget::prepareZBuf()
 {
-    int min = std::numeric_limits<int>::min();
+    int min = std::numeric_limits<double>::min();
     int h = height();
     int w = width();
     for (int i = 0; i < h; i++)

@@ -82,7 +82,7 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     transformMatr.multLeft(Viewport);
 
     //Vec3d light = camera->getCenter(); // camera is a light source
-    Vec3d light = {25, 15, 20};
+    Vec3d light = {700, 1000, 0};
 
     Vec3d cam_pos = camera->getCenter();
     for (unsigned i = 0; i < model->getFacesNum(); i++)
