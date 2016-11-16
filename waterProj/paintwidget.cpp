@@ -34,7 +34,7 @@ PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent)
     zbuffer = nullptr;
     zbufHeight = 0;
 
-    bgColor = QColor(90, 90, 90);
+    bgColor = QColor(100, 100, 100);
 }
 
 PaintWidget::~PaintWidget()
@@ -121,7 +121,7 @@ Vec3d barycentric(Vec2d A, Vec2d B, Vec2d C, Vec2d P) {
     return Vec3d(-1,1,1); // in this case generate negative coordinates, it will be thrown away by the rasterizator
 }
 
-void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, QColor &modelColor)
+void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, QColor &modelColor, double transparency)
 {
     int width = this->width();
     int height = this->height();
@@ -182,6 +182,7 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
             std::swap(A, B);
             std::swap(dAn, dBn);
             std::swap(dA, dB);
+            std::swap(ddA, ddB);
         }
         for (int j = A.x; j <= B.x; j++)
         {
@@ -196,21 +197,34 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
 
             Vec3d r = (dPn*(dPn*light_dir*2.f) - light_dir).normalize();
             Vec3d v = (dP - camera).normalize();
-            double reflection = pow(std::max(0.0, r*v), 50);
+            double reflection = pow(std::max(0.0, r*v), 32);
 
             double ity = std::min(std::max(0.2, dPn*light_dir), 1.0);
             // с учётом уменьшения интенсивности с расстоянием
             //double ity = std::max(0.0, dPn*light_dir/pow((dP - light).length(),2)*100);
             //double ity = 0;
 
+            if (ddP.z >= 0)
             if (P.x > 0 && P.x < width && P.y > 0 && P.y < height)
             {
                 if (ddP.z - zbuffer[P.y][P.x] > 10e-2)
                 {
                     zbuffer[P.y][P.x] = ddP.z;
-                    img->setPixel(P.x, height - P.y, qRgb(std::min(modelColor.red()*ity + 255*reflection, 255.0),
-                                                          std::min(modelColor.green()*ity + 255*reflection, 255.0),
-                                                          std::min(modelColor.blue()*ity + 255*reflection, 255.0)));
+                    if (std::fabs(1 - transparency) < 10e-2)
+                        img->setPixel(P.x, height - P.y, qRgb(std::min(modelColor.red()*ity + 255*reflection, 255.0),
+                                                              std::min(modelColor.green()*ity + 255*reflection, 255.0),
+                                                              std::min(modelColor.blue()*ity + 255*reflection, 255.0)));
+                    else
+                    {
+                        QColor clr1 = img->pixel(P.x, height - P.y);
+                        QColor clr2(std::min(modelColor.red()*ity + 255*reflection, 255.0),
+                                    std::min(modelColor.green()*ity + 255*reflection, 255.0),
+                                    std::min(modelColor.blue()*ity + 255*reflection, 255.0));
+                        img->setPixel(P.x, height - P.y,
+                                      qRgb(clr1.red() * (1-transparency) + clr2.red() * transparency,
+                                           clr1.green() * (1-transparency) + clr2.green() * transparency,
+                                           clr1.blue() * (1-transparency) + clr2.blue() * transparency));
+                    }
                 }
             }
         }

@@ -189,6 +189,15 @@ void WaterGrid::recalculateNormals()
     for (auto norm : _norms)
         norm[0] = norm[1] = norm[2] = 0;
 
+  /*  for (int i = 0; i < _faces.size(); i++)
+    {
+        _facenorms[i] = cross(_verts[_faces[i][1][0]] - _verts[_faces[i][0][0]], _verts[_faces[i][2][0]] - _verts[_faces[i][0][0]]);
+    }
+
+    for (int i = 0; i < _faces.size(); i++)
+        for (int j = 0; j < 3; j++)
+            _norms[_faces[i][j][2]] +=  _facenorms[i];*/
+
     for (auto face : _faces)
     {
         //for (auto vert : face)

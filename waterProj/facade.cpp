@@ -64,9 +64,11 @@ void Facade::loadCameraFromFile(StreamInfo info)
 
         drawManager->drawScene(sceneManager->getScene(), sceneManager->currentCamera());
 
+
         WaterGrid *grid = new WaterGrid;
         waterGrid = grid;
         grid->setColor(QColor(32, 178, 201));
+        grid->set_transparency(0.6);
 
         sceneManager->addObject(grid->createGrid(0, 0, 50, 50, 5, 50, 50));
         grid->Solve();

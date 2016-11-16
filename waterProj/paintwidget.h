@@ -5,16 +5,10 @@
 #include <QWidget>
 #include "model.h"
 #include "geometry.h"
-#include <QLineF>
 #include <QPen>
 #include <vector>
 
 using std::vector;
-
-struct pLine{
-    QLineF line;
-    QPen pen;
-};
 
 class PaintWidget : public QWidget
 {
@@ -24,7 +18,7 @@ public:
     ~PaintWidget();
 
     void drawLine(double x1, double y1, double x2, double y2, QColor &modelColor);
-    void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor);
+    void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor, double transparency);
 
     void clear();
     void setImg();
@@ -43,8 +37,6 @@ private:
 
     double **zbuffer;
     int zbufHeight;
-
-    vector<pLine> linesVect;
 
 signals:
 

@@ -20,7 +20,7 @@ public:
     virtual void clear() override;
     virtual void drawEdge(double, double, double, double, QColor &modelColor) override;
     virtual void drawPoint(double, double, QColor &modelColor) override;
-    virtual void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor) override;
+    virtual void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor, double transparency) override;
     virtual void prepareZBuf() override;
 };
 

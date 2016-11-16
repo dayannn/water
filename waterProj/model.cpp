@@ -7,6 +7,7 @@ Model::Model()
     posInfo.alpha = posInfo.beta = posInfo.gamma = 0;
     posInfo.scale = 0;
 
+    _transparency_koef = 1;
     _color = QColor(255, 255, 255);
 }
 
@@ -72,6 +73,8 @@ BaseObject* Model::loadFromFile(const std::string *filename)
             _faces.push_back(f);
         }
     }
+
+    _facenorms.resize(_faces.size());
     std::cerr << "# v# " << _verts.size() << " f# " << _faces.size()
               << " vt# " << _uv.size() << " vn# " << _norms.size() << std::endl;
     loadTexture(filename, "_diffuse.jpg");
@@ -182,4 +185,14 @@ void Model::remakeNormals()
         for (auto vert : face)
             _norms[vert[2]] = _norms[vert[2]] + _verts[vert[0]];
     }
+}
+
+double Model::get_transparency_koef()
+{
+    return _transparency_koef;
+}
+
+void Model::set_transparency(double koef)
+{
+    _transparency_koef = koef;
 }

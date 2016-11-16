@@ -49,6 +49,9 @@ public:
 
     PositionInfo& getPositionInfo();
 
+    double get_transparency_koef();
+    void set_transparency(double koef);
+
     QColor& getColor();
     void setColor (QColor color);
 
@@ -60,10 +63,11 @@ protected:
     vector<Vec3d> _verts;
     vector<vector<Vec3i> > _faces;
     vector<Vec3d> _norms;
+    vector<Vec3d> _facenorms;
     vector<Vec2d> _uv;
 
     QColor _color;
-
+    double _transparency_koef;
     QImage _diffusemap;
     void loadTexture(const std::string *filename, const char* suffix);
 };

@@ -91,25 +91,23 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
         Vec3d screen_coords[3];
         Vec3d coords[3];
         Vec3d normals[3];
-        //Vec3d world_coords[3];
+       // Vec3d world_coords[3];
 
         for (int j = 0; j < 3; j++)
         {
             Vec3d& v = model->vertice(face[j][0]);
             screen_coords[j] = proj3d(transformMatr*embed<4>(v));
-            //world_coords[j] = v;
-            //Vec3d light_dir = v - light;
-            //light_dir.normalize();
+           //world_coords[j] = v;
             normals[j] = proj3d(modelRotMatr * embed<4>(model->norm(i, j)));
             coords[j] = proj3d(modelRotMatr * embed<4>(v));
         }
 
-//        Vec3d n = (world_coords[2] - world_coords[0])^(world_coords[1]-world_coords[0]);
-//        Vec3d camdir (cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), -cos(camera->getAlpha())*cos(camera->getBeta()));
-//        double visibility = n*camdir;
+       // Vec3d n = cross(world_coords[1]-world_coords[0], world_coords[2] - world_coords[0]);
+       // Vec3d camdir (cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), -cos(camera->getAlpha())*cos(camera->getBeta()));
+       // double visibility = n*camdir;
 
 
-//        if (visibility >= 0)
-            canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, modelColor);
+       // if (visibility >= 0)
+            canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, modelColor, model->get_transparency_koef());
     }
 }
