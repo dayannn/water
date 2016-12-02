@@ -8,6 +8,7 @@
 #include "stream.h"
 #include "scene.h"
 #include "watergrid.h"
+#include "land.h"
 
 #include <QObject>
 #include <QTimer>

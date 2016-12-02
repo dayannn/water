@@ -43,6 +43,4 @@ signals:
 public slots:
 };
 
-Vec3d barycentric (Vec2d A, Vec2d B, Vec2d C, Vec2d P);
-
 #endif // PAINTWIDGET_H

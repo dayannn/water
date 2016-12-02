@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     polygonalmodelpainter.cpp \
     geometry.cpp \
     model.cpp \
-    watergrid.cpp
+    watergrid.cpp \
+    land.cpp
 
 HEADERS  += mainwindow.h \
     facade.h \
@@ -62,15 +63,21 @@ HEADERS  += mainwindow.h \
     geometry.h \
     polygonalmodelpainter.h \
     model.h \
-    watergrid.h
+    watergrid.h \
+    land.h
 
 FORMS    += mainwindow.ui
 
 DISTFILES += \
     classes_diagram.qmodel
 
+QMAKE_CXXFLAGS += -fopenmp
+LIBS += -fopenmp
+
+QMAKE_LFLAGS += -fopenmp
+
 # optimization ?
-#QMAKE_CXXFLAGS += -Ofast -flto
+QMAKE_CXXFLAGS += -Ofast -flto
 
 # Profiler flags
 #CONFIG += DEBUG

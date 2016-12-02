@@ -74,6 +74,11 @@ void Facade::loadCameraFromFile(StreamInfo info)
         grid->Solve();
         grid->recalculateNormals();
 
+        Land *land = new Land;
+        land->createGrid();
+        land->recalculateNormals();
+        land->setColor(QColor(218, 189, 171));
+        sceneManager->addObject(land);
 
         StreamInfo boatInfo;
         std::string* boatFile = new std::string;

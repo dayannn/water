@@ -53,6 +53,8 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
 
     vector<Vec3i> v;
     v.resize(3);
+
+    // грани поверхности
     for (int i = 0; i < xnum - 1; i++)
         for (int j = 0; j < znum - 1; j++)
         {
@@ -66,6 +68,7 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
             v[2][2] = v[2][0] = i*znum + j + 1;
             _faces.push_back(v);
         }
+
 
     // боковые грани
     _verts.push_back(Vec3d(_verts[0].x, 0, _verts[0].z));
@@ -132,6 +135,7 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
         _faces.push_back(v);
     }
 
+
     _norms.resize(_verts.size());
 
     for (auto norm : _norms)
@@ -151,7 +155,7 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
         for (int j = 0; j < znum+2; j++)
             prevGrid[i][j].y = curGrid[i][j].y = nextGrid[i][j].y = ylevel;
 
-    curGrid[9][12].y = 0.6;
+   /* curGrid[9][12].y = 0.6;
     curGrid[9][13].y = 0.6;
     curGrid[10][11].y = 0.6;
     curGrid[10][12].y = 0.4;
@@ -175,7 +179,7 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
     prevGrid[11][13].y = 0.4;
     prevGrid[11][14].y = 0.6;
     prevGrid[12][12].y = 0.6;
-    prevGrid[12][13].y = 0.6;
+    prevGrid[12][13].y = 0.6;*/
 
    /* for (int i = 1; i < xnum+1; i++)
         for (int j = 1; j < znum+1; j++)
@@ -211,14 +215,28 @@ void WaterGrid::recalculateNormals()
 }
 
 
-const double relax_param = 1.985;
+const double relax_param = 1.959;
+const double wspeed = 50;
 
 void WaterGrid::Solve()
 {
+    milliseconds curTime = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
+    milliseconds diff = duration_cast<milliseconds>(curTime - prevTime);
+    prevTime = curTime;
+    long dt = diff.count();
+
+
+    #pragma omp parallel for
     for (int i = 1; i < _xnum + 1; i++)
         for (int j = 1; j < _znum + 1; j++)
             nextGrid[i][j].y = (1 - relax_param)*prevGrid[i][j].y +
                     relax_param*(curGrid[i][j+1].y + curGrid[i][j-1].y + curGrid[i+1][j].y + curGrid[i-1][j].y)/4;
+
+  /*  for (int i = 1; i < _xnum + 1; i++)
+        for (int j = 1; j < _znum + 1; j++)
+            nextGrid[i][j].y = curGrid[i][j].y + (1-relax_param*0.5)*(curGrid[i][j].y - prevGrid[i][j].y)
+                    + 0.5*0.5*0.25*0.25*(4*curGrid[i][j].y - curGrid[i][j+1].y - curGrid[i][j-1].y - curGrid[i+1][j].y - curGrid[i-1][j].y);
+*/
 
     for (int i = 1; i < _xnum + 1; i++)     // граничные условия (отражение)
     {
@@ -239,3 +257,4 @@ void WaterGrid::Solve()
     std::swap(curGrid, prevGrid);
 
 }
+

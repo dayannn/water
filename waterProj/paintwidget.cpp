@@ -3,6 +3,7 @@
 #include <QPainter>
 
 
+
 void free_matrix_rows (double **p, int strs)
 {
     for (int i = 0; i < strs; i++)
@@ -34,7 +35,7 @@ PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent)
     zbuffer = nullptr;
     zbufHeight = 0;
 
-    bgColor = QColor(100, 100, 100);
+    bgColor = QColor(120, 120, 120);
 }
 
 PaintWidget::~PaintWidget()
@@ -106,19 +107,6 @@ void PaintWidget::drawLine(double x1, double y1, double x2, double y2, QColor& m
             x += sx;
         e += m;
     }
-}
-
-Vec3d barycentric(Vec2d A, Vec2d B, Vec2d C, Vec2d P) {
-    Vec3d s[2];
-    for (int i=2; i--; ) {
-        s[i][0] = C[i]-A[i];
-        s[i][1] = B[i]-A[i];
-        s[i][2] = A[i]-P[i];
-    }
-    Vec3d u = cross(s[0], s[1]);
-    if (std::abs(u[2])>1e-2) // dont forget that u[2] is integer. If it is zero then triangle ABC is degenerate
-        return Vec3d(1.f-(u.x+u.y)/u.z, u.y/u.z, u.x/u.z);
-    return Vec3d(-1,1,1); // in this case generate negative coordinates, it will be thrown away by the rasterizator
 }
 
 void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, QColor &modelColor, double transparency)
@@ -207,23 +195,23 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
             if (ddP.z >= 0)
             if (P.x > 0 && P.x < width && P.y > 0 && P.y < height)
             {
-                if (ddP.z - zbuffer[P.y][P.x] > 10e-2)
+                if (ddP.z - zbuffer[P.y][P.x] > 10e-5)
                 {
                     zbuffer[P.y][P.x] = ddP.z;
-                    if (std::fabs(1 - transparency) < 10e-2)
+                    if (std::fabs(1 - transparency) < 10e-5)
                         img->setPixel(P.x, height - P.y, qRgb(std::min(modelColor.red()*ity + 255*reflection, 255.0),
                                                               std::min(modelColor.green()*ity + 255*reflection, 255.0),
                                                               std::min(modelColor.blue()*ity + 255*reflection, 255.0)));
                     else
                     {
                         QColor clr1 = img->pixel(P.x, height - P.y);
-                        QColor clr2(std::min(modelColor.red()*ity + 255*reflection, 255.0),
-                                    std::min(modelColor.green()*ity + 255*reflection, 255.0),
-                                    std::min(modelColor.blue()*ity + 255*reflection, 255.0));
+                        QColor clr2(modelColor.red()*ity,
+                                    modelColor.green()*ity,
+                                    modelColor.blue()*ity);
                         img->setPixel(P.x, height - P.y,
-                                      qRgb(clr1.red() * (1-transparency) + clr2.red() * transparency,
-                                           clr1.green() * (1-transparency) + clr2.green() * transparency,
-                                           clr1.blue() * (1-transparency) + clr2.blue() * transparency));
+                                      qRgb(std::min(clr1.red() * (1-transparency) + clr2.red() * transparency + 255*reflection, 255.0),
+                                           std::min(clr1.green() * (1-transparency) + clr2.green() * transparency + 255*reflection, 255.0),
+                                           std::min(clr1.blue() * (1-transparency) + clr2.blue() * transparency + 255*reflection, 255.0)));
                     }
                 }
             }
@@ -269,6 +257,7 @@ void PaintWidget::prepareZBuf()
     int min = std::numeric_limits<double>::min();
     int h = height();
     int w = width();
+#pragma omp parallel for
     for (int i = 0; i < h; i++)
         for (int j = 0; j < w; j++)
             zbuffer[i][j] = min;

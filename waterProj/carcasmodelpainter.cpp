@@ -68,8 +68,10 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
     transformMatr.multLeft(projection);
     transformMatr.multLeft(Viewport);
 
-    for (vector<Vec3i>& face : model->getFaces())
+    #pragma omp parallel for
+    for (unsigned i = 0; i < model->getFacesNum(); i++)
     {
+    vector<Vec3i>& face = model->face(i);
         /* Vec3d world_coords[3];
         for (int i = 0; i < 3; i++)
         {
@@ -88,7 +90,8 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
             Vec3i vscr0 = proj3d(transformMatr*embed<4>(v0));
             Vec3i vscr1 = proj3d(transformMatr*embed<4>(v1));
 
-            canvas->drawEdge(vscr0.x, vscr0.y, vscr1.x, vscr1.y, modelColor);
+            if (vscr0.z >= 0 && vscr1.z >= 0)
+                canvas->drawEdge(vscr0.x, vscr0.y, vscr1.x, vscr1.y, modelColor);
         }
     }
 

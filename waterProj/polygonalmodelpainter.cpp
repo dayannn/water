@@ -1,8 +1,15 @@
 #include "polygonalmodelpainter.h"
+#include <omp.h>
 
 PolygonalModelPainter::PolygonalModelPainter(){}
 
 PolygonalModelPainter::~PolygonalModelPainter(){}
+
+void fillTr(BaseCanvas* canvas, Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor, double transparency)
+{
+    canvas->fillTriangle(verts, real_verts, norms, light, camera, modelColor, transparency);
+}
+
 
 
 void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *camera)
@@ -85,6 +92,8 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     Vec3d light = {700, 1000, 0};
 
     Vec3d cam_pos = camera->getCenter();
+
+    #pragma omp parallel for
     for (unsigned i = 0; i < model->getFacesNum(); i++)
     {
         vector<Vec3i>& face = model->face(i);
@@ -97,17 +106,18 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
         {
             Vec3d& v = model->vertice(face[j][0]);
             screen_coords[j] = proj3d(transformMatr*embed<4>(v));
-           //world_coords[j] = v;
+          // world_coords[j] = v;
             normals[j] = proj3d(modelRotMatr * embed<4>(model->norm(i, j)));
             coords[j] = proj3d(modelRotMatr * embed<4>(v));
         }
 
-       // Vec3d n = cross(world_coords[1]-world_coords[0], world_coords[2] - world_coords[0]);
-       // Vec3d camdir (cos(camera->getAlpha())*sin(camera->getBeta()), -sin(camera->getAlpha()), -cos(camera->getAlpha())*cos(camera->getBeta()));
-       // double visibility = n*camdir;
+        Vec3d n = cross(coords[1]-coords[0], coords[2] - coords[0]);
+        Vec3d camdir = ((coords[0] + coords[1] + coords[2])/3 - cam_pos);
+        double visibility = n*camdir;
 
 
-       // if (visibility >= 0)
+        if (visibility >= 0)
             canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, modelColor, model->get_transparency_koef());
     }
+
 }

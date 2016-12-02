@@ -2,11 +2,13 @@
 #define WATERGRID_H
 
 #include "model.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 class WaterGrid : public Model
 {
 private:
-
 
 
 public:
@@ -25,6 +27,8 @@ public:
     Vec3d** prevGrid;
     Vec3d** curGrid;
     Vec3d** nextGrid;
+
+    milliseconds prevTime;
 };
 
 #endif // WATERGRID_H
