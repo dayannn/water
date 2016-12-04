@@ -155,35 +155,18 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
         for (int j = 0; j < znum+2; j++)
             prevGrid[i][j].y = curGrid[i][j].y = nextGrid[i][j].y = ylevel;
 
-   /* curGrid[9][12].y = 0.6;
-    curGrid[9][13].y = 0.6;
-    curGrid[10][11].y = 0.6;
-    curGrid[10][12].y = 0.4;
-    curGrid[10][13].y = 0.4;
-    curGrid[10][14].y = 0.6;
-    curGrid[11][11].y = 0.6;
-    curGrid[11][12].y = 0.4;
-    curGrid[11][13].y = 0.4;
-    curGrid[11][14].y = 0.6;
-    curGrid[12][12].y = 0.6;
-    curGrid[12][13].y = 0.6;
+    this->setColor(QColor(45, 149, 225));
+    this->setKoefsFromColor(this->get_koefs(), this->getColor());
+    LightKoefs* tmpKoefs = this->get_koefs();
+    tmpKoefs->transparency = 0.65;
+    tmpKoefs->shininess = 32;
+    tmpKoefs->spec_r = 0.85; //std::min ((double)this->getColor().red()/255 * 3 + 0.4, 1.0);
+    tmpKoefs->spec_g = 0.85; //std::min ((double)this->getColor().green()/255 * 3 + 0.4, 1.0);
+    tmpKoefs->spec_b = 0.85; //std::min ((double)this->getColor().blue()/255 * 3 + 0.4, 1.0);
 
-    prevGrid[9][12].y = 0.6;
-    prevGrid[9][13].y = 0.6;
-    prevGrid[10][11].y = 0.6;
-    prevGrid[10][12].y = 0.4;
-    prevGrid[10][13].y = 0.4;
-    prevGrid[10][14].y = 0.6;
-    prevGrid[11][11].y = 0.6;
-    prevGrid[11][12].y = 0.4;
-    prevGrid[11][13].y = 0.4;
-    prevGrid[11][14].y = 0.6;
-    prevGrid[12][12].y = 0.6;
-    prevGrid[12][13].y = 0.6;*/
-
-   /* for (int i = 1; i < xnum+1; i++)
-        for (int j = 1; j < znum+1; j++)
-            curGrid[i][j].y *= 2*exp(-5*(pow(dx*(i-20), 2) + pow(dz*(j-20), 2))) + 1;*/
+    tmpKoefs->amb_r /= 2;
+    tmpKoefs->amb_g /= 2;
+    tmpKoefs->amb_b /= 2;
 
     return this;
 }
@@ -220,10 +203,10 @@ const double wspeed = 50;
 
 void WaterGrid::Solve()
 {
-    milliseconds curTime = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
+    /*milliseconds curTime = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
     milliseconds diff = duration_cast<milliseconds>(curTime - prevTime);
     prevTime = curTime;
-    long dt = diff.count();
+    long dt = diff.count();*/
 
 
     #pragma omp parallel for
@@ -238,17 +221,19 @@ void WaterGrid::Solve()
                     + 0.5*0.5*0.25*0.25*(4*curGrid[i][j].y - curGrid[i][j+1].y - curGrid[i][j-1].y - curGrid[i+1][j].y - curGrid[i-1][j].y);
 */
 
+    #pragma omp parallel for
     for (int i = 1; i < _xnum + 1; i++)     // граничные условия (отражение)
     {
         nextGrid[i][0].y = nextGrid[i][1].y;
         nextGrid[i][_znum+1].y = nextGrid[i][_znum].y;
     }
+    #pragma omp parallel for
     for (int i = 1; i < _znum+1; i++)
     {
         nextGrid[0][i].y = nextGrid[1][i].y;
         nextGrid[_xnum+1][i].y = nextGrid[_xnum][i].y;
     }
-
+    #pragma omp parallel for
     for (int i = 0; i < _xnum; i++)
         for (int j = 0; j < _znum; j++)
             _verts[i*_znum + j].y = nextGrid[i+1][j+1].y;

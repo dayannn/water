@@ -54,6 +54,8 @@ void Facade::loadModelFromFile(StreamInfo info)
     }
 }
 
+
+
 void Facade::loadCameraFromFile(StreamInfo info)
 {
     try
@@ -64,12 +66,8 @@ void Facade::loadCameraFromFile(StreamInfo info)
 
         drawManager->drawScene(sceneManager->getScene(), sceneManager->currentCamera());
 
-
         WaterGrid *grid = new WaterGrid;
         waterGrid = grid;
-        grid->setColor(QColor(32, 178, 201));
-        grid->set_transparency(0.6);
-
         sceneManager->addObject(grid->createGrid(0, 0, 50, 50, 5, 50, 50));
         grid->Solve();
         grid->recalculateNormals();
@@ -77,7 +75,8 @@ void Facade::loadCameraFromFile(StreamInfo info)
         Land *land = new Land;
         land->createGrid();
         land->recalculateNormals();
-        land->setColor(QColor(218, 189, 171));
+        land->setColor(QColor(208, 189, 131));
+        land->setKoefsFromColor(land->get_koefs(), land->getColor());
         sceneManager->addObject(land);
 
         StreamInfo boatInfo;
@@ -86,7 +85,8 @@ void Facade::loadCameraFromFile(StreamInfo info)
         boatInfo.sourceName = boatFile;
         boatInfo.sourceType = SOURCE_FILE;
         boat = (Model*) loadManager->loadObject(&boatInfo);
-        boat->setColor(QColor(118, 71, 44));
+        boat->setColor(QColor(108, 61, 24));
+        boat->setKoefsFromColor(boat->get_koefs(), boat->getColor());
         boat->remakeNormals();      // do smth with it!
         sceneManager->addObject(boat);
         delete boatFile;
@@ -138,15 +138,22 @@ void Facade::changeModelType(eModelType type)
     drawManager->drawScene(sceneManager->getScene(), sceneManager->currentCamera());
 }
 
-int frame = 0;
-
 void Facade::updateWaterGrid()
 {
+    static  int r = 0;
+    r++;
+    static double koef = 0.1;
+    koef += 0.01;
+    if (koef > 0.3)
+        koef = 0.1;
+    for (int i = 0 ; i < waterGrid->_xnum; i++)
+        waterGrid->curGrid[i][0].y += koef * sin(r/5);
 
     waterGrid->Solve();
     waterGrid->recalculateNormals();
 
     drawManager->drawScene(sceneManager->getScene(), sceneManager->currentCamera());
+
     QTimer::singleShot(30, this, SLOT(updateWaterGrid()));
 }
 

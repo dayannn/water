@@ -14,9 +14,9 @@ BaseObject *Land::createGrid()
 {
     int xnum = 60;
     int znum = 60;
-    double xn = 0;
+    double xn = -0.1;
     double zn = 0;
-    double xlen = 50.0;
+    double xlen = 50.2;
     double zlen = 60.0;
     double ylevel = 0.0;
     double dx = xlen/xnum;
@@ -26,7 +26,8 @@ BaseObject *Land::createGrid()
     for (int i = 0; i < xnum; i++)
         for (int j = 0; j < znum; j++)
         {
-            _verts.push_back(Vec3d(xn + dx*i, ylevel + pow(dz*j,2)/350, zn + dz*j));
+            double r1 = -0.2 + ((double)rand() / RAND_MAX/2.5); //randomizing heights
+            _verts.push_back(Vec3d(xn + dx*i, ylevel + pow(dz*j,2)/350 + r1, zn + dz*j));
         }
 
     vector<Vec3i> v;
@@ -46,6 +47,10 @@ BaseObject *Land::createGrid()
             v[2][2] = v[2][0] = i*znum + j + 1;
             _faces.push_back(v);
         }
+
+
+
+
 
 
     // боковые грани

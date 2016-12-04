@@ -24,6 +24,20 @@ struct PositionInfo{
     double scale;
 };
 
+struct LightKoefs{
+    double transparency;
+    double amb_r;
+    double amb_g;
+    double amb_b;
+    double diff_r;
+    double diff_g;
+    double diff_b;
+    double spec_r;
+    double spec_g;
+    double spec_b;
+    double shininess;
+};
+
 class Model : public BaseObject{
 public:
     Model();
@@ -49,13 +63,15 @@ public:
 
     PositionInfo& getPositionInfo();
 
-    double get_transparency_koef();
-    void set_transparency(double koef);
+    LightKoefs* get_koefs();
+    void set_koefs(LightKoefs* koefs);
 
     QColor& getColor();
     void setColor (QColor color);
 
     void remakeNormals();
+
+    void setKoefsFromColor(LightKoefs* koefs, QColor clr);
 
 protected:
     PositionInfo posInfo;
@@ -67,7 +83,7 @@ protected:
     vector<Vec2d> _uv;
 
     QColor _color;
-    double _transparency_koef;
+    LightKoefs _koefs;
     QImage _diffusemap;
     void loadTexture(const std::string *filename, const char* suffix);
 };

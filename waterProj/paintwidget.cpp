@@ -109,7 +109,7 @@ void PaintWidget::drawLine(double x1, double y1, double x2, double y2, QColor& m
     }
 }
 
-void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, QColor &modelColor, double transparency)
+void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, QColor &modelColor, LightKoefs* koefs)
 {
     int width = this->width();
     int height = this->height();
@@ -146,6 +146,7 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
 
     int total_height = v2.y - v0.y;
 
+
     for (int i = 0; i < total_height; i++)
     {
         bool second_half = i > v1.y - v0.y || v1.y == v0.y;
@@ -179,39 +180,58 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
             Vec3d dPn = dAn + (dBn-dAn)*phi;
             Vec3d dP = dA + (dB-dA)*phi;
             Vec3d ddP = ddA + (ddB-ddA)*phi;
+
             Vec3d light_dir = (dP - light).normalize();
-
-            //Vec3d bar = barycentric(proj<2>(real_verts[0]), proj<2>(real_verts[1]), proj<2>(real_verts[2]), proj<2>(dP));
-
             Vec3d r = (dPn*(dPn*light_dir*2.f) - light_dir).normalize();
             Vec3d v = (dP - camera).normalize();
-            double reflection = pow(std::max(0.0, r*v), 32);
 
-            double ity = std::min(std::max(0.2, dPn*light_dir), 1.0);
+            double ityA_r = koefs->amb_r * 68;
+            double ityA_g = koefs->amb_g * 59;
+            double ityA_b = koefs->amb_b * 50;
+
+            double ityD_r = 0, ityD_g = 0, ityD_b = 0;
+            double diff_light_int = dPn*light_dir;
+            if (diff_light_int > 1e-8)
+            {
+                ityD_r = koefs->diff_r * diff_light_int * 248;
+                ityD_g = koefs->diff_g * diff_light_int * 238;
+                ityD_b = koefs->diff_b * diff_light_int * 228;
+            }
+
+            double ityS_r = 0, ityS_g = 0, ityS_b = 0;
+            double spec_light = r*v;
+            if (spec_light > 1e-8)
+            {
+                double spec_light_int = pow(spec_light, koefs->shininess);
+                ityS_r = koefs->spec_r * spec_light_int * 255;
+                ityS_g = koefs->spec_g * spec_light_int * 238;
+                ityS_b = koefs->spec_b * spec_light_int * 174;
+            }
+
+            double ity_r = std::min(ityA_r + ityD_r + ityS_r, 255.0);
+            double ity_g = std::min(ityA_g + ityD_g + ityS_g, 255.0);
+            double ity_b = std::min(ityA_b + ityD_b + ityS_b, 255.0);
+
             // с учётом уменьшения интенсивности с расстоянием
             //double ity = std::max(0.0, dPn*light_dir/pow((dP - light).length(),2)*100);
-            //double ity = 0;
 
-            if (ddP.z >= 0)
+            //if (ddP.z >= 0)
             if (P.x > 0 && P.x < width && P.y > 0 && P.y < height)
             {
-                if (ddP.z - zbuffer[P.y][P.x] > 10e-5)
+                if (ddP.z - zbuffer[P.y][P.x] > 10e-6)
                 {
                     zbuffer[P.y][P.x] = ddP.z;
-                    if (std::fabs(1 - transparency) < 10e-5)
-                        img->setPixel(P.x, height - P.y, qRgb(std::min(modelColor.red()*ity + 255*reflection, 255.0),
-                                                              std::min(modelColor.green()*ity + 255*reflection, 255.0),
-                                                              std::min(modelColor.blue()*ity + 255*reflection, 255.0)));
+                    if (std::fabs(1 - koefs->transparency) < 10e-5)
+                    {
+                        img->setPixel(P.x, height - P.y, qRgb(ity_r, ity_g, ity_b));
+                    }
                     else
                     {
-                        QColor clr1 = img->pixel(P.x, height - P.y);
-                        QColor clr2(modelColor.red()*ity,
-                                    modelColor.green()*ity,
-                                    modelColor.blue()*ity);
+                        QColor clr = img->pixel(P.x, height - P.y);
                         img->setPixel(P.x, height - P.y,
-                                      qRgb(std::min(clr1.red() * (1-transparency) + clr2.red() * transparency + 255*reflection, 255.0),
-                                           std::min(clr1.green() * (1-transparency) + clr2.green() * transparency + 255*reflection, 255.0),
-                                           std::min(clr1.blue() * (1-transparency) + clr2.blue() * transparency + 255*reflection, 255.0)));
+                                      qRgb(std::min(clr.red() * (1-koefs->transparency) + ity_r * koefs->transparency, 255.0),
+                                           std::min(clr.green() * (1-koefs->transparency) + ity_g * koefs->transparency, 255.0),
+                                           std::min(clr.blue() * (1-koefs->transparency) + ity_b * koefs->transparency, 255.0)));
                     }
                 }
             }

@@ -18,7 +18,7 @@ public:
     ~PaintWidget();
 
     void drawLine(double x1, double y1, double x2, double y2, QColor &modelColor);
-    void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor, double transparency);
+    void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor, LightKoefs *koefs);
 
     void clear();
     void setImg();

@@ -5,12 +5,6 @@ PolygonalModelPainter::PolygonalModelPainter(){}
 
 PolygonalModelPainter::~PolygonalModelPainter(){}
 
-void fillTr(BaseCanvas* canvas, Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor, double transparency)
-{
-    canvas->fillTriangle(verts, real_verts, norms, light, camera, modelColor, transparency);
-}
-
-
 
 void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *camera)
 {
@@ -89,7 +83,7 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     transformMatr.multLeft(Viewport);
 
     //Vec3d light = camera->getCenter(); // camera is a light source
-    Vec3d light = {700, 1000, 0};
+    Vec3d light = {550, 200, 0};
 
     Vec3d cam_pos = camera->getCenter();
 
@@ -117,7 +111,7 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
 
 
         if (visibility >= 0)
-            canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, modelColor, model->get_transparency_koef());
+            canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, modelColor, model->get_koefs());
     }
 
 }

@@ -7,7 +7,12 @@ Model::Model()
     posInfo.alpha = posInfo.beta = posInfo.gamma = 0;
     posInfo.scale = 0;
 
-    _transparency_koef = 1;
+    _koefs.amb_r = _koefs.amb_g = _koefs.amb_b = 0.5;
+    _koefs.diff_r = _koefs.diff_g = _koefs.diff_b = 0.5;
+    _koefs.spec_r = _koefs.spec_g = _koefs.spec_b = 0.5;
+
+    _koefs.transparency = 1.0;
+    _koefs.shininess = 4;
     _color = QColor(255, 255, 255);
 }
 
@@ -197,12 +202,22 @@ void Model::remakeNormals()
     }
 }
 
-double Model::get_transparency_koef()
+LightKoefs* Model::get_koefs()
 {
-    return _transparency_koef;
+    return &_koefs;
 }
 
-void Model::set_transparency(double koef)
+void Model::set_koefs(LightKoefs *koefs)
 {
-    _transparency_koef = koef;
+    _koefs = *koefs;
+}
+
+void Model::setKoefsFromColor(LightKoefs* koefs, QColor clr)
+{
+    koefs->amb_r = koefs->diff_r = koefs->spec_r = (double)clr.red()/255;
+    koefs->amb_g = koefs->diff_g = koefs->spec_g = (double)clr.green()/255;
+    koefs->amb_b = koefs->diff_b = koefs->spec_b = (double)clr.blue()/255;
+    koefs->spec_r = std::max(0.0, koefs->spec_r/2);
+    koefs->spec_g = std::max(0.0, koefs->spec_g/2);
+    koefs->spec_b = std::max(0.0, koefs->spec_b/2);
 }
