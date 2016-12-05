@@ -158,7 +158,7 @@ BaseObject *WaterGrid::createGrid(double xn, double zn, double xlen, double zlen
     this->setColor(QColor(45, 149, 225));
     this->setKoefsFromColor(this->get_koefs(), this->getColor());
     LightKoefs* tmpKoefs = this->get_koefs();
-    tmpKoefs->transparency = 0.65;
+    tmpKoefs->transparency = 0.75;
     tmpKoefs->shininess = 32;
     tmpKoefs->spec_r = 0.85; //std::min ((double)this->getColor().red()/255 * 3 + 0.4, 1.0);
     tmpKoefs->spec_g = 0.85; //std::min ((double)this->getColor().green()/255 * 3 + 0.4, 1.0);
@@ -198,7 +198,7 @@ void WaterGrid::recalculateNormals()
 }
 
 
-const double relax_param = 1.959;
+const double relax_param = 1.958;
 const double wspeed = 50;
 
 void WaterGrid::Solve()

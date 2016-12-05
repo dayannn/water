@@ -20,7 +20,7 @@ public:
     virtual void clear() = 0;
     virtual void drawPoint(double, double, QColor&) = 0;
     virtual void drawEdge(double, double, double, double, QColor&) = 0;
-    virtual void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, QColor &modelColor, LightKoefs* koefs) = 0;
+    virtual void fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d &camera, LightKoefs* koefs) = 0;
     virtual void prepareZBuf() = 0;
 };
 

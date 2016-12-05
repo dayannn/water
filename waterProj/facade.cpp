@@ -147,7 +147,12 @@ void Facade::updateWaterGrid()
     if (koef > 0.3)
         koef = 0.1;
     for (int i = 0 ; i < waterGrid->_xnum; i++)
-        waterGrid->curGrid[i][0].y += koef * sin(r/5);
+    {
+        double rnd = -0.15 + (double)rand() / RAND_MAX / 3.3;
+
+        waterGrid->curGrid[i][0].y += koef * sin(r/4) + rnd;
+
+    }
 
     waterGrid->Solve();
     waterGrid->recalculateNormals();

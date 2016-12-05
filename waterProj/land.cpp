@@ -48,11 +48,6 @@ BaseObject *Land::createGrid()
             _faces.push_back(v);
         }
 
-
-
-
-
-
     // боковые грани
     _verts.push_back(Vec3d(_verts[0].x, 0, _verts[0].z));
     for (int i = 1; i < xnum; i++)

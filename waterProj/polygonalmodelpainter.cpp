@@ -10,8 +10,6 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
 {
     Model* model = static_cast<Model*>(object);
 
-    QColor modelColor = model->getColor();
-
     /*Vec3d eye(sin(camera->getAlpha()) + cos(camera->getBeta()), sin(camera->getBeta()), cos(camera->getAlpha()));
    // eye.normalize();
     Vec3d center(camera->getCenter().x , camera->getCenter().y, camera->getCenter().z);
@@ -110,8 +108,11 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
         double visibility = n*camdir;
 
 
-        if (visibility >= 0)
-            canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, modelColor, model->get_koefs());
+        if (visibility >= 0 &&
+                ((screen_coords[0][0] > 0 && screen_coords[0][1] > 0 && screen_coords[0][2] > 0) ||
+                (screen_coords[1][0] > 0 && screen_coords[1][1] > 0 && screen_coords[1][2] > 0) ||
+                (screen_coords[2][0] > 0 && screen_coords[2][1] > 0 && screen_coords[2][2] > 0)))
+            canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, model->get_koefs());
     }
 
 }

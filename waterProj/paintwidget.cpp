@@ -35,7 +35,7 @@ PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent)
     zbuffer = nullptr;
     zbufHeight = 0;
 
-    bgColor = QColor(120, 120, 120);
+    bgColor = QColor(150, 150, 150);
 }
 
 PaintWidget::~PaintWidget()
@@ -109,7 +109,7 @@ void PaintWidget::drawLine(double x1, double y1, double x2, double y2, QColor& m
     }
 }
 
-void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, QColor &modelColor, LightKoefs* koefs)
+void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, LightKoefs* koefs)
 {
     int width = this->width();
     int height = this->height();
@@ -218,7 +218,7 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
             //if (ddP.z >= 0)
             if (P.x > 0 && P.x < width && P.y > 0 && P.y < height)
             {
-                if (ddP.z - zbuffer[P.y][P.x] > 10e-6)
+                if (ddP.z - zbuffer[P.y][P.x] > 10e-12)
                 {
                     zbuffer[P.y][P.x] = ddP.z;
                     if (std::fabs(1 - koefs->transparency) < 10e-5)
