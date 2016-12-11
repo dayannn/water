@@ -96,3 +96,15 @@ void CarcasModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera *ca
     }
 
 }
+
+void CarcasModelPainter::setLightPoint(Vec3d light)
+{}
+
+void CarcasModelPainter::setAmbLight(QColor *clr)
+{}
+
+void CarcasModelPainter::setDiffLight(QColor *clr)
+{}
+
+void CarcasModelPainter::setSpecLight(QColor *clr)
+{}

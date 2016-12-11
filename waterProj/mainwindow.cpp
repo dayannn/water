@@ -13,24 +13,16 @@ MainWindow::MainWindow(QWidget *parent) :
     mouseLeftButtonClicked = false;
 
     pressed_4 = pressed_5 = pressed_6 = pressed_8 = false;
+
+    settingsWnd = new SettingsWindow();
+    settingsWnd->setFacade(facade);
+    connect (ui->action, SIGNAL (triggered()), settingsWnd, SLOT (show()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete facade;
-}
-
-void MainWindow::on_loadCameraButton_clicked()
-{
-    std::string filename = "camera.txt";
-    facade->loadCameraFromFile({SOURCE_FILE, &filename});
-}
-
-void MainWindow::on_loadModelButton_clicked()
-{
-    std::string filename = "model.obj";
-    facade->loadModelFromFile({SOURCE_FILE, &filename});
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -181,4 +173,15 @@ void MainWindow::on_carcasModelRadioButton_toggled(bool checked)
         return;
 
     facade->changeModelType(MODEL_TYPE_CARCASS);
+}
+
+void MainWindow::on_action_triggered()
+{
+
+}
+
+void MainWindow::on_loadSceneAction_triggered()
+{
+    std::string filename = "camera.txt";
+    facade->loadCameraFromFile({SOURCE_FILE, &filename});
 }

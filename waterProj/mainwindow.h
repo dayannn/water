@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QKeyEvent>
+#include "settingswindow.h"
 #include "facade.h"
 
 
@@ -19,19 +20,19 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_loadCameraButton_clicked();
-
-    void on_loadModelButton_clicked();
-
-
     void on_polygonalModelRadioButton_toggled(bool checked);
 
     void on_carcasModelRadioButton_toggled(bool checked);
+
+    void on_action_triggered();
+
+    void on_loadSceneAction_triggered();
 
 private:
     Facade *facade;
     Ui::MainWindow *ui;
     bool mouseLeftButtonClicked;
+    SettingsWindow *settingsWnd;
 
     int mouseXPos;
     int mouseYPos;

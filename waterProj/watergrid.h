@@ -28,6 +28,20 @@ public:
     Vec3d** curGrid;
     Vec3d** nextGrid;
 
+
+    Vec3d** Hcur;
+    Vec3d** HhalfHor;
+    Vec3d** HhalfVert;
+    Vec3d** Hnew;
+    Vec3d** Ucur;
+    Vec3d** UhalfHor;
+    Vec3d** UhalfVert;
+    Vec3d** Unew;
+    Vec3d** Vcur;
+    Vec3d** VhalfHor;
+    Vec3d** VhalfVert;
+    Vec3d** Vnew;
+
     milliseconds prevTime;
 };
 

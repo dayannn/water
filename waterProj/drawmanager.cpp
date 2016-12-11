@@ -57,3 +57,23 @@ void DrawManager::changeModelType(eModelType type)
         break;
     }
 }
+
+void DrawManager::setLightPoint(Vec3d light)
+{
+    painter->setLightPoint(light);
+}
+
+void DrawManager::setAmbLight(QColor *clr)
+{
+    painter->setAmbLight(clr);
+}
+
+void DrawManager::setDiffLight(QColor *clr)
+{
+    painter->setDiffLight(clr);
+}
+
+void DrawManager::setSpecLight(QColor *clr)
+{
+    painter->setSpecLight(clr);
+}

@@ -173,6 +173,26 @@ QColor& Model::getColor()
     return _color;
 }
 
+void Model::reverseNormals()
+{
+    for (unsigned i = 0; i < _norms.size(); i++)
+    {
+        _norms[i].x *= -1;
+        _norms[i].y *= -1;
+        _norms[i].z *= -1;
+    }
+}
+
+void Model::changeVertsOrder()
+{
+    for (unsigned i = 0; i < _faces.size(); i++)
+    {
+        Vec3i tmp = _faces[i][0];
+        _faces[i][0] = _faces[i][2];
+        _faces[i][2] = tmp;
+    }
+}
+
 void Model::remakeNormals()
 {
     _norms.resize(_verts.size());

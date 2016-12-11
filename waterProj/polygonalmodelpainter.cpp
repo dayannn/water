@@ -1,7 +1,18 @@
 #include "polygonalmodelpainter.h"
 #include <omp.h>
 
-PolygonalModelPainter::PolygonalModelPainter(){}
+PolygonalModelPainter::PolygonalModelPainter(){
+    _light.point = Vec3d(500, 200, 0);
+    _light.amb_r = 68;
+    _light.amb_g = 59;
+    _light.amb_b = 50;
+    _light.diff_r = 248;
+    _light.diff_g = 238;
+    _light.diff_b = 228;
+    _light.spec_r = 255;
+    _light.spec_g = 238;
+    _light.spec_b = 175;
+}
 
 PolygonalModelPainter::~PolygonalModelPainter(){}
 
@@ -81,7 +92,6 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
     transformMatr.multLeft(Viewport);
 
     //Vec3d light = camera->getCenter(); // camera is a light source
-    Vec3d light = {550, 200, 0};
 
     Vec3d cam_pos = camera->getCenter();
 
@@ -108,11 +118,37 @@ void PolygonalModelPainter::draw(BaseCanvas *canvas, BaseObject *object, Camera 
         double visibility = n*camdir;
 
 
-        if (visibility >= 0 &&
+        if ((visibility >= 0 || fabs(model->get_koefs()->transparency - 1) < 1e-3) &&
                 ((screen_coords[0][0] > 0 && screen_coords[0][1] > 0 && screen_coords[0][2] > 0) ||
                 (screen_coords[1][0] > 0 && screen_coords[1][1] > 0 && screen_coords[1][2] > 0) ||
                 (screen_coords[2][0] > 0 && screen_coords[2][1] > 0 && screen_coords[2][2] > 0)))
-            canvas->fillTriangle(screen_coords, coords, normals, light, cam_pos, model->get_koefs());
+            canvas->fillTriangle(screen_coords, coords, normals, &_light, cam_pos, model->get_koefs());
     }
 
+}
+
+void PolygonalModelPainter::setLightPoint(Vec3d light)
+{
+    _light.point = light;
+}
+
+void PolygonalModelPainter::setAmbLight(QColor *clr)
+{
+    _light.amb_r = clr->red();
+    _light.amb_g = clr->green();
+    _light.amb_b = clr->blue();
+}
+
+void PolygonalModelPainter::setDiffLight(QColor *clr)
+{
+    _light.diff_r = clr->red();
+    _light.diff_g = clr->green();
+    _light.diff_b = clr->blue();
+}
+
+void PolygonalModelPainter::setSpecLight(QColor *clr)
+{
+    _light.spec_r = clr->red();
+    _light.spec_g = clr->green();
+    _light.spec_b = clr->blue();
 }

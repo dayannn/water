@@ -18,6 +18,13 @@ public:
     ~PolygonalModelPainter();
 
     virtual void draw(BaseCanvas *canvas, BaseObject *object, Camera *camera) override;
+    virtual void setLightPoint(Vec3d light) override;
+    virtual void setAmbLight(QColor *clr) override;
+    virtual void setDiffLight(QColor* clr) override;
+    virtual void setSpecLight(QColor* clr) override;
+
+private:
+    light_source _light;
 };
 
 

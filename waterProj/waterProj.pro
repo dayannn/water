@@ -34,7 +34,9 @@ SOURCES += main.cpp\
     geometry.cpp \
     model.cpp \
     watergrid.cpp \
-    land.cpp
+    land.cpp \
+    settingswindow.cpp \
+    colorpickwidget.cpp
 
 HEADERS  += mainwindow.h \
     facade.h \
@@ -64,9 +66,12 @@ HEADERS  += mainwindow.h \
     polygonalmodelpainter.h \
     model.h \
     watergrid.h \
-    land.h
+    land.h \
+    settingswindow.h \
+    colorpickwidget.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    settingswindow.ui
 
 DISTFILES += \
     classes_diagram.qmodel

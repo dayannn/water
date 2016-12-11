@@ -18,7 +18,10 @@ public:
     ~CarcasModelPainter();
 
     virtual void draw(BaseCanvas *, BaseObject *, Camera *) override;
-
+    virtual void setLightPoint(Vec3d light) override;
+    virtual void setAmbLight(QColor *clr) override;
+    virtual void setDiffLight(QColor* clr) override;
+    virtual void setSpecLight(QColor* clr) override;
 };
 
 #endif // CARCASMODELPAINTER_H

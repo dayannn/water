@@ -64,7 +64,7 @@ void Facade::loadCameraFromFile(StreamInfo info)
 
         sceneManager->addCamera(loadManager->loadCamera(&info));
 
-        drawManager->drawScene(sceneManager->getScene(), sceneManager->currentCamera());
+
 
         WaterGrid *grid = new WaterGrid;
         waterGrid = grid;
@@ -73,10 +73,9 @@ void Facade::loadCameraFromFile(StreamInfo info)
         grid->recalculateNormals();
 
         Land *land = new Land;
+        landGrid = land;
         land->createGrid();
         land->recalculateNormals();
-        land->setColor(QColor(208, 189, 131));
-        land->setKoefsFromColor(land->get_koefs(), land->getColor());
         sceneManager->addObject(land);
 
         StreamInfo boatInfo;
@@ -85,15 +84,17 @@ void Facade::loadCameraFromFile(StreamInfo info)
         boatInfo.sourceName = boatFile;
         boatInfo.sourceType = SOURCE_FILE;
         boat = (Model*) loadManager->loadObject(&boatInfo);
-        boat->setColor(QColor(108, 61, 24));
+        boat->setColor(QColor(178, 205, 214));
         boat->setKoefsFromColor(boat->get_koefs(), boat->getColor());
+
+        boat->changeVertsOrder();
         boat->remakeNormals();      // do smth with it!
         sceneManager->addObject(boat);
         delete boatFile;
 
         TransformInfo boatTransform;
         boatTransform.type = TRANSFORM_MOVE_Y;
-        boatTransform.delta = 5;
+        boatTransform.delta = 5.6;
         transformManager->transformModel(boat, &boatTransform);
 
         boatTransform.type = TRANSFORM_MOVE_X;
@@ -103,6 +104,8 @@ void Facade::loadCameraFromFile(StreamInfo info)
         boatTransform.type = TRANSFORM_MOVE_Z;
         boatTransform.delta = 10;
         transformManager->transformModel(boat, &boatTransform);
+
+        drawManager->drawScene(sceneManager->getScene(), sceneManager->currentCamera());
 
         QTimer::singleShot(200, this, SLOT(updateWaterGrid()));
     }
@@ -148,15 +151,12 @@ void Facade::updateWaterGrid()
         koef = 0.1;
     for (int i = 0 ; i < waterGrid->_xnum; i++)
     {
-        double rnd = -0.15 + (double)rand() / RAND_MAX / 3.3;
-
+        double rnd = -0.1 + (double)rand() / RAND_MAX / 5;
         waterGrid->curGrid[i][0].y += koef * sin(r/4) + rnd;
-
     }
 
     waterGrid->Solve();
     waterGrid->recalculateNormals();
-
     drawManager->drawScene(sceneManager->getScene(), sceneManager->currentCamera());
 
     QTimer::singleShot(30, this, SLOT(updateWaterGrid()));
@@ -173,34 +173,58 @@ void Facade::moveBoat(double dl, double dalpha)
     double dx = dl * cos(beta);
     double dz = -dl * sin(beta);
 
-    boatTransform.type = TRANSFORM_MOVE_X;
-    boatTransform.delta = dx;
-    transformManager->transformModel(boat, &boatTransform);
+    double new_x = boat->getPositionInfo().x + dx;
+    double new_z = boat->getPositionInfo().z + dz;
 
-    boatTransform.type = TRANSFORM_MOVE_Z;
-    boatTransform.delta = dz;
-    transformManager->transformModel(boat, &boatTransform);
+    if (5.0 - landGrid->getHeight(new_x, new_z) > 10e-5)
+    {
 
-    double x = boat->getPositionInfo().x;
-    double z = boat->getPositionInfo().z;
+        boatTransform.type = TRANSFORM_MOVE_X;
+        boatTransform.delta = dx;
+        transformManager->transformModel(boat, &boatTransform);
 
-    for (int i = 1; i < waterGrid->_xnum+1; i++)
-        for (int j = 1; j < waterGrid->_znum+1; j++)
-        {
-           waterGrid->curGrid[i][j].y += -exp(-(pow(i*waterGrid->_dx - (x - (dl >= 0 ? 4*cos(beta) : -4*cos(beta))), 2)
-                                                + pow(j*waterGrid->_dz - (z + (dl >= 0 ? 4*sin(beta) : -4*sin(beta))), 2)))/5;
+        boatTransform.type = TRANSFORM_MOVE_Z;
+        boatTransform.delta = dz;
+        transformManager->transformModel(boat, &boatTransform);
 
-           waterGrid->curGrid[i][j].y += exp(-(pow(i*waterGrid->_dx - (x + (dl >= 0 ? 6*cos(beta) : -6*cos(beta))), 2)
-                                                    + pow(j*waterGrid->_dz - (z - (dl >= 0 ? 6*sin(beta) : -6*sin(beta))), 2)))/5;
+        for (int i = 1; i < waterGrid->_xnum+1; i++)
+            for (int j = 1; j < waterGrid->_znum+1; j++)
+            {
+               waterGrid->curGrid[i][j].y += -exp(-(pow(i*waterGrid->_dx - (new_x - (dl >= 0 ? 4*cos(beta) : -4*cos(beta))), 2)
+                                                    + pow(j*waterGrid->_dz - (new_z + (dl >= 0 ? 4*sin(beta) : -4*sin(beta))), 2)))/7.5;
+
+               waterGrid->curGrid[i][j].y += exp(-(pow(i*waterGrid->_dx - (new_x + (dl >= 0 ? 6*cos(beta) : -6*cos(beta))), 2)
+                                                        + pow(j*waterGrid->_dz - (new_z - (dl >= 0 ? 6*sin(beta) : -6*sin(beta))), 2)))/7.5;
 
 
-           /* waterGrid->curGrid[i][j].y += exp(-(pow(i*waterGrid->_dx - (x - (dl >= 0 ? 8*cos(beta+0.3) : -8*cos(beta+0.3))), 2)
-                                                            + pow(j*waterGrid->_dz - (z + (dl >= 0 ? 8*sin(beta+0.3) : -8*sin(beta+0.3))), 2)))/7.5;
-            waterGrid->curGrid[i][j].y += -exp(-(pow(i*waterGrid->_dx - (x - (dl >= 0 ? 5*cos(beta) : -5*cos(beta))), 2)
-                                                            + pow(j*waterGrid->_dz - (z + (dl >= 0 ? 5*sin(beta) : -5*sin(beta))), 2)))/2.5;
-            waterGrid->curGrid[i][j].y += exp(-(pow(i*waterGrid->_dx - (x - (dl >= 0 ? 8*cos(beta-0.3) : -8*cos(beta-0.3))), 2)
-                                                            + pow(j*waterGrid->_dz - (z + (dl >= 0 ? 8*sin(beta-0.3) : -8*sin(beta-0.3))), 2)))/7.5;
-        */
-        }
+                // additional values
+               /* waterGrid->curGrid[i][j].y += exp(-(pow(i*waterGrid->_dx - (x - (dl >= 0 ? 8*cos(beta+0.3) : -8*cos(beta+0.3))), 2)
+                                                                + pow(j*waterGrid->_dz - (z + (dl >= 0 ? 8*sin(beta+0.3) : -8*sin(beta+0.3))), 2)))/7.5;
+                waterGrid->curGrid[i][j].y += -exp(-(pow(i*waterGrid->_dx - (x - (dl >= 0 ? 5*cos(beta) : -5*cos(beta))), 2)
+                                                                + pow(j*waterGrid->_dz - (z + (dl >= 0 ? 5*sin(beta) : -5*sin(beta))), 2)))/2.5;
+                waterGrid->curGrid[i][j].y += exp(-(pow(i*waterGrid->_dx - (x - (dl >= 0 ? 8*cos(beta-0.3) : -8*cos(beta-0.3))), 2)
+                                                                + pow(j*waterGrid->_dz - (z + (dl >= 0 ? 8*sin(beta-0.3) : -8*sin(beta-0.3))), 2)))/7.5;
+            */
+            }
+    }
+}
 
+void Facade::setLightPoint(Vec3d light)
+{
+    drawManager->setLightPoint(light);
+}
+
+void Facade::setAmbLight(QColor *clr)
+{
+    drawManager->setAmbLight(clr);
+}
+
+void Facade::setDiffLight(QColor *clr)
+{
+    drawManager->setDiffLight(clr);
+}
+
+void Facade::setSpecLight(QColor *clr)
+{
+    drawManager->setSpecLight(clr);
 }

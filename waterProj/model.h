@@ -70,6 +70,8 @@ public:
     void setColor (QColor color);
 
     void remakeNormals();
+    void reverseNormals();
+    void changeVertsOrder();
 
     void setKoefsFromColor(LightKoefs* koefs, QColor clr);
 

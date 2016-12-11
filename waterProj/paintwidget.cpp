@@ -109,7 +109,7 @@ void PaintWidget::drawLine(double x1, double y1, double x2, double y2, QColor& m
     }
 }
 
-void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Vec3d& light, Vec3d& camera, LightKoefs* koefs)
+void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, light_source *light, Vec3d& camera, LightKoefs* koefs)
 {
     int width = this->width();
     int height = this->height();
@@ -145,6 +145,8 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
     }
 
     int total_height = v2.y - v0.y;
+   // if (total_height > height)
+   //     return;
 
 
     for (int i = 0; i < total_height; i++)
@@ -181,21 +183,21 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
             Vec3d dP = dA + (dB-dA)*phi;
             Vec3d ddP = ddA + (ddB-ddA)*phi;
 
-            Vec3d light_dir = (dP - light).normalize();
+            Vec3d light_dir = (dP - light->point).normalize();
             Vec3d r = (dPn*(dPn*light_dir*2.f) - light_dir).normalize();
             Vec3d v = (dP - camera).normalize();
 
-            double ityA_r = koefs->amb_r * 68;
-            double ityA_g = koefs->amb_g * 59;
-            double ityA_b = koefs->amb_b * 50;
+            double ityA_r = koefs->amb_r * light->amb_r;
+            double ityA_g = koefs->amb_g * light->amb_g;
+            double ityA_b = koefs->amb_b * light->amb_b;
 
             double ityD_r = 0, ityD_g = 0, ityD_b = 0;
             double diff_light_int = dPn*light_dir;
             if (diff_light_int > 1e-8)
             {
-                ityD_r = koefs->diff_r * diff_light_int * 248;
-                ityD_g = koefs->diff_g * diff_light_int * 238;
-                ityD_b = koefs->diff_b * diff_light_int * 228;
+                ityD_r = koefs->diff_r * diff_light_int * light->diff_r;
+                ityD_g = koefs->diff_g * diff_light_int * light->diff_g;
+                ityD_b = koefs->diff_b * diff_light_int * light->diff_b;
             }
 
             double ityS_r = 0, ityS_g = 0, ityS_b = 0;
@@ -203,9 +205,9 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, Ve
             if (spec_light > 1e-8)
             {
                 double spec_light_int = pow(spec_light, koefs->shininess);
-                ityS_r = koefs->spec_r * spec_light_int * 255;
-                ityS_g = koefs->spec_g * spec_light_int * 238;
-                ityS_b = koefs->spec_b * spec_light_int * 174;
+                ityS_r = koefs->spec_r * spec_light_int * light->spec_r;
+                ityS_g = koefs->spec_g * spec_light_int * light->spec_g;
+                ityS_b = koefs->spec_b * spec_light_int * light->spec_b;
             }
 
             double ity_r = std::min(ityA_r + ityD_r + ityS_r, 255.0);
@@ -282,5 +284,4 @@ void PaintWidget::prepareZBuf()
         for (int j = 0; j < w; j++)
             zbuffer[i][j] = min;
 }
-
 

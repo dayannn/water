@@ -6,6 +6,15 @@
 class Land : public Model
 {
 private:
+    int _xnum;
+    int _znum;
+    double _xn;
+    double _zn;
+    double _xlen;
+    double _zlen;
+    double _dx;
+    double _dz;
+
 
 public:
     Land();
@@ -13,7 +22,7 @@ public:
 
     BaseObject* createGrid ();
     void recalculateNormals();
-
+    double getHeight(double x, double z);
 
 };
 

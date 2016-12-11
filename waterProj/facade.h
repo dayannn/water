@@ -33,6 +33,11 @@ public:
 
     void moveBoat(double dl, double dalpha);
 
+    void setLightPoint(Vec3d light);
+    void setAmbLight(QColor *clr);
+    void setDiffLight(QColor* clr);
+    void setSpecLight(QColor *clr);
+
 public slots:
     void updateWaterGrid();
 
@@ -45,6 +50,7 @@ private:
 
     WaterGrid *waterGrid;
     Model *boat;
+    Land * landGrid;
 
     void processStream(StreamInfo*);
 };

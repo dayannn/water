@@ -26,7 +26,10 @@ public:
     void drawScene  (BaseScene*, vector<Camera*>::iterator&);
 
     void changeModelType (eModelType type);
-
+    void setLightPoint(Vec3d light);
+    void setAmbLight(QColor *clr);
+    void setDiffLight(QColor* clr);
+    void setSpecLight(QColor *clr);
 };
 
 #endif // DRAWMANAGER_H
