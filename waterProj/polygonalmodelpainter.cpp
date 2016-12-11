@@ -2,10 +2,10 @@
 #include <omp.h>
 
 PolygonalModelPainter::PolygonalModelPainter(){
-    _light.point = Vec3d(500, 200, 0);
-    _light.amb_r = 68;
-    _light.amb_g = 59;
-    _light.amb_b = 50;
+    _light.point = Vec3d(200, 100, -70);
+    _light.amb_r = 55;
+    _light.amb_g = 55;
+    _light.amb_b = 55;
     _light.diff_r = 248;
     _light.diff_g = 238;
     _light.diff_b = 228;

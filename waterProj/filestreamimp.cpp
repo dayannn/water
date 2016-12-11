@@ -39,8 +39,6 @@ void FileStreamImp::closeFile()
 
 }*/
 
-    // EXCEPTIONS TO BE ADDED HERE!!
-
 
 BaseObject* FileStreamImp::loadModel(const std::string *filename, Model *model)
 {
@@ -63,7 +61,6 @@ void FileStreamImp::loadCameraParams(const std::string *fileName, double &x, dou
     closeFile();
 }
 
-// catch exceptions? add throws?
 
 void FileStreamImp::readParams(double &alpha, double &beta, double &scale)
 {

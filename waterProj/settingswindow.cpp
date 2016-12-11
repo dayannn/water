@@ -7,7 +7,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->amb_light_pick_widget->setColor(QColor(68, 69, 50));
+    ui->amb_light_pick_widget->setColor(QColor(55, 55, 55));
     ui->diff_light_pick_widget->setColor(QColor(248, 238, 228));
     ui->spec_light_pick_widget->setColor(QColor(255, 238, 175));
     connect(ui->amb_light_pick_widget, SIGNAL(sendColor(QColor)), this, SLOT(amb_Light_Changed(QColor)));
