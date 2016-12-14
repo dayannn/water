@@ -183,45 +183,42 @@ void PaintWidget::fillTriangle(Vec3d* verts, Vec3d *real_verts, Vec3d* norms, li
             Vec3d dP = dA + (dB-dA)*phi;
             Vec3d ddP = ddA + (ddB-ddA)*phi;
 
-            Vec3d light_dir = (dP - light->point).normalize();
-            Vec3d r = (dPn*(dPn*light_dir*2.f) - light_dir).normalize();
-            Vec3d v = (dP - camera).normalize();
-
-            double ityA_r = koefs->amb_r * light->amb_r;
-            double ityA_g = koefs->amb_g * light->amb_g;
-            double ityA_b = koefs->amb_b * light->amb_b;
-
-            double ityD_r = 0, ityD_g = 0, ityD_b = 0;
-            double diff_light_int = dPn*light_dir;
-            if (diff_light_int > 1e-8)
-            {
-                ityD_r = koefs->diff_r * diff_light_int * light->diff_r;
-                ityD_g = koefs->diff_g * diff_light_int * light->diff_g;
-                ityD_b = koefs->diff_b * diff_light_int * light->diff_b;
-            }
-
-            double ityS_r = 0, ityS_g = 0, ityS_b = 0;
-            double spec_light = r*v;
-            if (spec_light > 1e-8)
-            {
-                double spec_light_int = pow(spec_light, koefs->shininess);
-                ityS_r = koefs->spec_r * spec_light_int * light->spec_r;
-                ityS_g = koefs->spec_g * spec_light_int * light->spec_g;
-                ityS_b = koefs->spec_b * spec_light_int * light->spec_b;
-            }
-
-            double ity_r = std::min(ityA_r + ityD_r + ityS_r, 255.0);
-            double ity_g = std::min(ityA_g + ityD_g + ityS_g, 255.0);
-            double ity_b = std::min(ityA_b + ityD_b + ityS_b, 255.0);
-
-            // с учётом уменьшения интенсивности с расстоянием
-            //double ity = std::max(0.0, dPn*light_dir/pow((dP - light).length(),2)*100);
-
             //if (ddP.z >= 0)
             if (P.x > 0 && P.x < width && P.y > 0 && P.y < height)
             {
                 if (ddP.z - zbuffer[P.y][P.x] > 10e-12)
                 {
+                    Vec3d light_dir = (dP - light->point).normalize();
+                    Vec3d r = (dPn*(dPn*light_dir*2.f) - light_dir).normalize();
+                    Vec3d v = (dP - camera).normalize();
+
+                    double ityA_r = koefs->amb_r * light->amb_r;
+                    double ityA_g = koefs->amb_g * light->amb_g;
+                    double ityA_b = koefs->amb_b * light->amb_b;
+
+                    double ityD_r = 0, ityD_g = 0, ityD_b = 0;
+                    double diff_light_int = dPn*light_dir;
+                    if (diff_light_int > 1e-8)
+                    {
+                        ityD_r = koefs->diff_r * diff_light_int * light->diff_r;
+                        ityD_g = koefs->diff_g * diff_light_int * light->diff_g;
+                        ityD_b = koefs->diff_b * diff_light_int * light->diff_b;
+                    }
+
+                    double ityS_r = 0, ityS_g = 0, ityS_b = 0;
+                    double spec_light = r*v;
+                    if (spec_light > 1e-8)
+                    {
+                        double spec_light_int = pow(spec_light, koefs->shininess);
+                        ityS_r = koefs->spec_r * spec_light_int * light->spec_r;
+                        ityS_g = koefs->spec_g * spec_light_int * light->spec_g;
+                        ityS_b = koefs->spec_b * spec_light_int * light->spec_b;
+                    }
+
+                    double ity_r = std::min(ityA_r + ityD_r + ityS_r, 255.0);
+                    double ity_g = std::min(ityA_g + ityD_g + ityS_g, 255.0);
+                    double ity_b = std::min(ityA_b + ityD_b + ityS_b, 255.0);
+
                     zbuffer[P.y][P.x] = ddP.z;
                     if (std::fabs(1 - koefs->transparency) < 10e-5)
                     {

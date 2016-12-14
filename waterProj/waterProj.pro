@@ -74,7 +74,9 @@ FORMS    += mainwindow.ui \
     settingswindow.ui
 
 DISTFILES += \
-    classes_diagram.qmodel
+    classes_diagram.qmodel \
+    boat.obj \
+    camera.txt
 
 QMAKE_CXXFLAGS += -fopenmp
 LIBS += -fopenmp
